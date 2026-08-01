@@ -38,3 +38,5 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .giant-arrow svg.mini-arrow{width:42px;height:42px;transform:none}.circle-link svg.mini-arrow{width:28px;height:28px;transform:none}.giant-arrow:hover,.circle-link:hover{transform:translateY(-5px)}
 @media(max-width:600px){.custom-icon{width:52px;height:52px;border-radius:17px}.service-grid .custom-icon{width:54px;height:54px}.giant-arrow svg.mini-arrow{width:32px;height:32px}}.service-detail-list .row-arrow{width:46px;height:46px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--ink)}.service-detail-list .row-arrow svg{width:20px;height:20px}.service-detail-list article:hover .row-arrow{transform:translateY(-3px)}
 .contact-form button,.process-band a{display:inline-flex;align-items:center;justify-content:center;gap:12px}.button-icon{width:17px;height:17px;display:block;flex:0 0 auto}
+/* Stronger property titles */
+.property-copy h3,.property-copy h3 a{font-weight:800;color:#10120e;letter-spacing:-.055em}
