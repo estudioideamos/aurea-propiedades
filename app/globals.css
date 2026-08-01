@@ -389,3 +389,10 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @keyframes faqAnswerIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.faq-list details{padding:22px 14px}.faq-list summary{font-size:18px}.faq-list details p{font-size:14px;line-height:1.68;margin-right:8px}.faq-list details[open]{padding:23px 18px 22px}}
 @media(prefers-reduced-motion:reduce){.faq-list details[open] p{animation:none}}
+/* Clean two-column catalog introduction */
+.catalog-intro{grid-template-columns:minmax(0,1fr) 330px;column-gap:7vw;row-gap:25px;align-items:end;margin-bottom:54px}
+.catalog-intro .section-tag{grid-column:1/-1;align-self:auto}
+.catalog-intro h2{font-size:clamp(58px,5.5vw,82px);line-height:.9;max-width:900px}
+.catalog-intro>p{grid-column:2;font-size:14px;line-height:1.75;margin:0 0 5px}
+@media(max-width:900px){.catalog-intro{grid-template-columns:1fr}.catalog-intro .section-tag,.catalog-intro>p{grid-column:1}.catalog-intro h2{font-size:clamp(52px,8vw,72px)}}
+@media(max-width:600px){.catalog-intro{gap:22px}.catalog-intro h2{font-size:47px}.catalog-intro>p{font-size:13px}}
