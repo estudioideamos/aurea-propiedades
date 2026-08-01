@@ -1,11 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUp, ArrowUpRight, Clock3, House, Instagram, Linkedin, MapPin } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Check, Clock3, House, Instagram, Linkedin, MapPin, Palette, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { siteAsset } from "./site-path";
 
 const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 \u00c1UREA \u00b7 ";
+const marqueeItems = ["PROPIEDADES SELECCIONADAS", "TASACIONES PROFESIONALES", "ADMINISTRACIÓN DE ALQUILERES", "ACOMPAÑAMIENTO PERSONAL", "BUENOS AIRES"];
+const colorThemes = [
+  { id: "lime", name: "Lima Áurea", color: "#cfff3d", rgb: "207,255,61" },
+  { id: "red", name: "Rojo coral", color: "#ff5a4e", rgb: "255,90,78" },
+  { id: "blue", name: "Azul cielo", color: "#65b6ff", rgb: "101,182,255" },
+  { id: "amber", name: "Ámbar", color: "#ffbf3f", rgb: "255,191,63" },
+  { id: "lavender", name: "Lavanda", color: "#b9a7ff", rgb: "185,167,255" },
+];
+
+function SiteMarquee() {
+  const content = <>{marqueeItems.map(item => <span key={item}>{item}<i aria-hidden="true">✦</i></span>)}</>;
+  return <div className="site-marquee" aria-label="Servicios destacados"><div className="site-marquee-track"><span className="site-marquee-group">{content}</span><span className="site-marquee-group" aria-hidden="true">{content}</span></div></div>;
+}
+
+function ThemeSwitcher() {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState("lime");
+
+  const applyTheme = (id: string) => {
+    const theme = colorThemes.find(item => item.id === id) ?? colorThemes[0];
+    document.documentElement.style.setProperty("--accent", theme.color);
+    document.documentElement.style.setProperty("--accent-rgb", theme.rgb);
+    window.localStorage.setItem("aurea-accent", theme.id);
+    setSelected(theme.id);
+  };
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("aurea-accent");
+    if (saved && colorThemes.some(theme => theme.id === saved)) applyTheme(saved);
+  }, []);
+
+  return <aside className={"theme-switcher " + (open ? "open" : "")} aria-label="Personalizar color destacado">
+    <button className="theme-switcher-toggle" type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-label={open ? "Cerrar selector de color" : "Cambiar color destacado"}><Palette aria-hidden="true"/><span>COLOR</span></button>
+    {open && <div className="theme-switcher-panel"><header><div><small>PERSONALIZÁ LA EXPERIENCIA</small><b>Color destacado</b></div><button type="button" onClick={() => setOpen(false)} aria-label="Cerrar"><X aria-hidden="true"/></button></header><p>Elegí el acento visual de todo el sitio.</p><div className="theme-swatches">{colorThemes.map(theme => <button key={theme.id} type="button" className={selected === theme.id ? "active" : ""} onClick={() => applyTheme(theme.id)} aria-label={"Usar " + theme.name}><i style={{backgroundColor: theme.color}}/><span>{theme.name}</span>{selected === theme.id && <Check aria-hidden="true"/>}</button>)}</div></div>}
+  </aside>;
+}
 
 function Brand() {
   return <Link className="brand" href="/" aria-label="Aurea Propiedades, inicio"><span className="brand-mark"><i/><i/></span><span><b>&Aacute;UREA</b><small>PROPIEDADES</small></span></Link>;
@@ -13,7 +49,7 @@ function Brand() {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  return <><div className="top-rail"><span>BUENOS AIRES / ARGENTINA</span><span>COMPRA / VENTA / ALQUILER / INVERSION</span><a href="tel:+541155550190">+54 11 5555 0190</a></div><header className="site-header"><Brand/><nav className={open ? "open" : ""}><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Abrir menu"><i/><i/></button></header></>;
+  return <><div className="top-rail"><span>BUENOS AIRES / ARGENTINA</span><span>COMPRA / VENTA / ALQUILER / INVERSION</span><a href="tel:+541155550190">+54 11 5555 0190</a></div><header className="site-header"><Brand/><nav className={open ? "open" : ""}><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Abrir menu"><i/><i/></button></header><SiteMarquee/><ThemeSwitcher/></>;
 }
 
 export function SiteFooter() {
