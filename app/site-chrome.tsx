@@ -9,6 +9,7 @@ const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 \u00c1UREA \u00b7 ";
 const marqueeItems = ["PROPIEDADES SELECCIONADAS", "TASACIONES PROFESIONALES", "ADMINISTRACIÓN DE ALQUILERES", "ACOMPAÑAMIENTO PERSONAL", "BUENOS AIRES"];
 const colorThemes = [
   { id: "lime", name: "Lima Áurea", color: "#cfff3d", rgb: "207,255,61" },
+  { id: "electric-lime", name: "Lima eléctrico", color: "#E8F115", rgb: "232,241,21" },
   { id: "red", name: "Rojo coral", color: "#ff5a4e", rgb: "255,90,78" },
   { id: "blue", name: "Azul cielo", color: "#65b6ff", rgb: "101,182,255" },
   { id: "amber", name: "Ámbar", color: "#ffbf3f", rgb: "255,191,63" },
