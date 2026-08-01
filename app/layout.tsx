@@ -1,10 +1,9 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 
-const manrope = Manrope({ variable: "--font-sans", subsets: ["latin"] });
-const cormorant = Cormorant_Garamond({ variable: "--font-display", subsets: ["latin"], weight: ["500", "600", "700"] });
+const manrope = Manrope({ variable: "--font-sans", subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -13,13 +12,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const base = new URL(`${protocol}://${host}`);
   return {
     metadataBase: base,
-    title: "Áurea Propiedades | Casas con carácter",
+    title: "Aurea Propiedades | Espacios excepcionales",
     description: "Propiedades seleccionadas para comprar, alquilar e invertir en Buenos Aires.",
-    openGraph: { title: "Áurea Propiedades", description: "Encontrá un lugar que se sienta tuyo.", images: [{ url: "/og.png", width: 1200, height: 630 }], locale: "es_AR", type: "website" },
-    twitter: { card: "summary_large_image", title: "Áurea Propiedades", description: "Encontrá un lugar que se sienta tuyo.", images: ["/og.png"] },
+    openGraph: { title: "Aurea Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [{ url: "/og.png", width: 1200, height: 630 }], locale: "es_AR", type: "website" },
+    twitter: { card: "summary_large_image", title: "Aurea Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: ["/og.png"] },
   };
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body className={`${manrope.variable} ${cormorant.variable}`}>{children}</body></html>;
+  return <html lang="es"><body className={manrope.variable}>{children}</body></html>;
 }
