@@ -124,3 +124,8 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .floating-search label:focus-within:after{border-color:#5c7216;transform:translateY(5%) rotate(225deg)}
 @media(hover:hover){.floating-search label:hover{background:#f7f6ef;transform:translateY(-2px)}}
 @media(max-width:600px){.floating-search label{min-height:67px;padding:14px 46px 13px 18px}.floating-search label:after{right:20px}}
+
+/* Emphasized property contact heading */
+.premium-contact h3{position:relative;font-size:42px;font-weight:700;line-height:.98;letter-spacing:-.065em;margin:15px 0 26px;padding-bottom:18px;color:#10120e}
+.premium-contact h3:after{content:"";position:absolute;left:0;bottom:0;width:86px;height:5px;border-radius:999px;background:var(--accent)}
+@media(max-width:680px){.premium-contact h3{font-size:40px}}
