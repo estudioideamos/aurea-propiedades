@@ -10,6 +10,7 @@ const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
+const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
 const localBindingConfig = {
   main: "./worker/index.ts",
@@ -42,18 +43,20 @@ export default defineConfig(async () => {
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
+  const deploymentPlugins = isGitHubPages
+    ? []
+    : [
+        sites(),
+        cloudflare({
+          viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+          config: localBindingConfig,
+        }),
+      ];
 
   return {
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
-    plugins: [
-      vinext(),
-      sites(),
-      cloudflare({
-        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-        config: localBindingConfig,
-      }),
-    ],
+    plugins: [vinext(), ...deploymentPlugins],
   };
 });

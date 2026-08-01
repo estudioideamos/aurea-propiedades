@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowUpRight, Bath, BedDouble, CalendarDays, CarFront, Check, Home, MapPin, Maximize2, Play, Ruler, Sparkles } from "lucide-react";
 import { formatPrice, properties } from "../../properties";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
+import { siteAsset } from "../../site-path";
 import { PropertyActions } from "./property-actions";
 import { PropertyGallery } from "./property-gallery";
 
@@ -13,6 +14,13 @@ const galleryPool=[
   "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=1600&q=86",
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=86"
 ];
+
+export function generateStaticParams() {
+  return properties.map(({ slug }) => ({ slug }));
+}
+
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -34,6 +42,6 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
       <section className="detail-block"><div className="detail-block-head"><div><p className="detail-block-label">03 / CARACTERISTICAS</p><h2>Comodidades</h2></div><Sparkles aria-hidden="true" strokeWidth={1.5}/></div><div className="feature-grid">{property.amenities.map(item=><span key={item}><i><Check aria-hidden="true" strokeWidth={2}/></i>{item}</span>)}<span><i><Check aria-hidden="true" strokeWidth={2}/></i>Excelente luminosidad</span><span><i><Check aria-hidden="true" strokeWidth={2}/></i>Entorno consolidado</span><span><i><Check aria-hidden="true" strokeWidth={2}/></i>Acceso a servicios</span></div></section>
       <section className="detail-tour"><img src={gallery[2]} alt={`Recorrido de ${property.title}`}/><div><p>04 / RECORRIDO</p><h2>Conocela en detalle.</h2><a href={`https://wa.me/541155550190?text=${encodeURIComponent(`Hola, quisiera solicitar el video de ${property.title}.`)}`} target="_blank" rel="noreferrer"><Play aria-hidden="true" fill="currentColor"/> Solicitar video</a></div></section>
       <section className="detail-block location-block"><div className="detail-block-head"><div><p className="detail-block-label">05 / UBICACI&Oacute;N</p><h2>{property.location}</h2></div><MapPin aria-hidden="true" strokeWidth={1.5}/></div><iframe title={`Mapa de ${property.location}`} src={mapUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade"/></section>
-    </div><aside className="detail-sidebar"><div className="contact-card premium-contact"><p className="detail-block-label">COORDIN&Aacute; UNA VISITA</p><h3>&iquest;Quer&eacute;s conocerla?</h3><p>Dejanos tus datos y un asesor especializado te contacta dentro de las pr&oacute;ximas 24 horas.</p><label><span>NOMBRE</span><input placeholder="Tu nombre"/></label><label><span>TELEFONO</span><input placeholder="+54 9 11"/></label><label><span>EMAIL</span><input placeholder="nombre@email.com" type="email"/></label><label><span>MENSAJE</span><textarea defaultValue={`Hola, me interesa ${property.title}.`}/></label><button type="button">Enviar consulta <ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></button><a href={`https://wa.me/541155550190?text=${encodeURIComponent(`Hola, me interesa ${property.title}.`)}`} target="_blank" rel="noreferrer"><img src="/assets/whatsapp.svg" alt="" aria-hidden="true"/> Consultar por WhatsApp</a></div><div className="detail-advisor"><span>ASESOR DE LA PROPIEDAD</span><div className="advisor-avatar">AP</div><h4>Equipo &Aacute;urea</h4><p>Especialistas en {property.zone}</p><a href="tel:+541155550190">+54 11 5555 0190</a></div></aside></section>
+    </div><aside className="detail-sidebar"><div className="contact-card premium-contact"><p className="detail-block-label">COORDIN&Aacute; UNA VISITA</p><h3>&iquest;Quer&eacute;s conocerla?</h3><p>Dejanos tus datos y un asesor especializado te contacta dentro de las pr&oacute;ximas 24 horas.</p><label><span>NOMBRE</span><input placeholder="Tu nombre"/></label><label><span>TELEFONO</span><input placeholder="+54 9 11"/></label><label><span>EMAIL</span><input placeholder="nombre@email.com" type="email"/></label><label><span>MENSAJE</span><textarea defaultValue={`Hola, me interesa ${property.title}.`}/></label><button type="button">Enviar consulta <ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></button><a href={`https://wa.me/541155550190?text=${encodeURIComponent(`Hola, me interesa ${property.title}.`)}`} target="_blank" rel="noreferrer"><img src={siteAsset("/assets/whatsapp.svg")} alt="" aria-hidden="true"/> Consultar por WhatsApp</a></div><div className="detail-advisor"><span>ASESOR DE LA PROPIEDAD</span><div className="advisor-avatar">AP</div><h4>Equipo &Aacute;urea</h4><p>Especialistas en {property.zone}</p><a href="tel:+541155550190">+54 11 5555 0190</a></div></aside></section>
     <section className="related-section"><div className="related-heading"><div><p>06 / TAMBIEN PUEDE INTERESARTE</p><h2>Propiedades relacionadas</h2></div><Link href="/propiedades">Ver todas <ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></Link></div><div className="related-grid">{related.map(item=><article key={item.id}><Link href={`/propiedades/${item.slug}`} className="related-image"><img src={item.image} alt={item.title}/><span>{item.operation}</span></Link><div><p>{item.type} / {item.location}</p><h3><Link href={`/propiedades/${item.slug}`}>{item.title}</Link></h3><strong>{formatPrice(item)}</strong></div></article>)}</div></section><SiteFooter/></main>;
 }
