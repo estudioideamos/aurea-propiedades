@@ -48,7 +48,7 @@ const testimonials = [
   { quote: "No me mostraron cantidad: me mostraron criterio. Encontramos una inversión sólida y entendí cada decisión antes de avanzar.", author: "MARTÍN ROSSI", role: "INVERSOR / ZONA NORTE" },
   { quote: "Desde la primera visita hasta la firma todo fue ordenado, humano y transparente. Áurea hizo que una decisión enorme se sintiera liviana.", author: "SOFÍA Y TOMÁS", role: "COMPRADORES / NORDELTA" }
 ];
-const testimonialOrbitText = "VOCES REALES · EXPERIENCIAS ÁUREA · ";
+const testimonialOrbitText = "VOCES REALES · ÁUREA · ";
 function MetricCounter({ value, suffix }: { value: number; suffix?: string }) {
   const [display, setDisplay] = useState(0);
   const element = useRef<HTMLElement | null>(null);

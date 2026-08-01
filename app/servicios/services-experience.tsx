@@ -47,7 +47,7 @@ export function ServicesExperience() {
 
   return <section className="editorial-services" aria-labelledby="services-title">
     <header className="editorial-services-head">
-      <div><span className="section-tag">01 / SERVICIOS INMOBILIARIOS</span><h2 id="services-title">Soluciones para cada etapa<br/>de tu propiedad.</h2></div>
+      <div><span className="section-tag">01 / SERVICIOS INMOBILIARIOS</span><h2 id="services-title"><span>Soluciones para cada etapa</span><span>de tu propiedad.</span></h2></div>
       <p>Una gestión integral, clara y personalizada. Activamos el equipo indicado para que cada decisión tenga respaldo y cada proceso avance.</p>
     </header>
     <div className="editorial-services-layout">
