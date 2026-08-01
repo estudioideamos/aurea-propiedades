@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { useState } from "react";
+import { ArrowUp, ArrowUpRight, MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function Brand() {
   return <Link className="brand" href="/" aria-label="Aurea Propiedades, inicio"><span className="brand-mark"><i/><i/></span><span><b>&Aacute;UREA</b><small>PROPIEDADES</small></span></Link>;
@@ -14,5 +14,12 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
-  return <footer className="site-footer"><div className="footer-lead"><Brand/><h2>Hagamos que tu pr&oacute;ximo movimiento inmobiliario sea extraordinario.</h2><Link href="/contacto" className="circle-link"><ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link></div><div className="footer-grid"><div><span className="footer-label">NAVEGACION</span><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></div><div><span className="footer-label">OFICINA</span><p>Av. del Libertador 2424<br/>Buenos Aires, Argentina</p><a href="tel:+541155550190">+54 11 5555 0190</a><a href="mailto:hola@aureapropiedades.com">hola@aureapropiedades.com</a></div><div><span className="footer-label">GESTION</span><Link href="/tasacion">Solicitar tasaci&oacute;n</Link><Link href="/admin">Administraci&oacute;n</Link></div></div><div className="footer-bottom"><span>2026 AUREA PROPIEDADES</span><span>HECHO PARA VIVIR MEJOR</span></div></footer>;
+  const [showTop, setShowTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 520);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return <><footer className="site-footer"><div className="footer-lead"><Brand/><h2>Hagamos que tu pr&oacute;ximo movimiento inmobiliario sea extraordinario.</h2><Link href="/contacto" className="circle-link"><ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link></div><div className="footer-grid"><div><span className="footer-label">NAVEGACION</span><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></div><div><span className="footer-label">OFICINA</span><p>Av. del Libertador 2424<br/>Buenos Aires, Argentina</p><a href="tel:+541155550190">+54 11 5555 0190</a><a href="mailto:hola@aureapropiedades.com">hola@aureapropiedades.com</a></div><div><span className="footer-label">GESTION</span><Link href="/tasacion">Solicitar tasaci&oacute;n</Link><Link href="/admin">Administraci&oacute;n</Link></div></div><div className="footer-bottom"><span>2026 AUREA PROPIEDADES</span><span>HECHO PARA VIVIR MEJOR</span></div></footer><div className="floating-actions" aria-label="Accesos rapidos"><button className={`go-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} type="button" aria-label="Volver arriba"><span>Volver arriba</span><ArrowUp aria-hidden="true" strokeWidth={1.9}/></button><a className="whatsapp-float" href="https://wa.me/541155550190" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WhatsApp</span><MessageCircle aria-hidden="true" strokeWidth={1.9}/></a></div></>;
 }
