@@ -49,7 +49,7 @@ function Brand() {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  return <><div className="top-rail"><span>BUENOS AIRES / ARGENTINA</span><span>COMPRA / VENTA / ALQUILER / INVERSION</span><a href="tel:+541155550190">+54 11 5555 0190</a></div><header className="site-header"><Brand/><nav className={open ? "open" : ""}><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Abrir menu"><i/><i/></button></header><SiteMarquee/><ThemeSwitcher/></>;
+  return <><SiteMarquee/><header className="site-header"><Brand/><nav className={open ? "open" : ""}><Link href="/propiedades">Propiedades</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Abrir menu"><i/><i/></button></header><ThemeSwitcher/></>;
 }
 
 export function SiteFooter() {
