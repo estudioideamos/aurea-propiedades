@@ -411,3 +411,28 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @media(max-width:600px){.catalog-hero{min-height:500px;padding-top:48px;padding-bottom:48px}.catalog-hero h1{font-size:52px;margin:38px 0 28px}}
 /* Final continuous testimonial legend */
 .testimonial-carousel .testimonial-orbit-text{color:var(--ink);inset:10px}
+/* Compact services page for faster scanning */
+.services-hero{min-height:455px;padding-top:58px;padding-bottom:58px}
+.services-hero h1{font-size:clamp(60px,7vw,98px);margin:44px 0 24px}
+.editorial-services-layout{align-items:stretch}
+.editorial-services-list>button{min-height:91px;grid-template-columns:62px minmax(0,1fr) 48px;gap:18px;padding:15px 10px}
+.service-number{padding-top:6px}
+.service-row-copy{gap:8px}
+.service-row-copy b{font-size:clamp(27px,2.55vw,39px)}
+.service-row-copy small{font-size:12.5px;line-height:1.55}
+.service-row-arrow{width:46px;height:46px}
+.editorial-services-list>button.active{min-height:137px;padding:18px 16px 18px 20px}
+.editorial-services-list>button.active .service-row-copy small{max-height:58px}
+.editorial-service-visual{height:501px}
+.visual-copy{bottom:27px}
+.visual-copy h3{font-size:clamp(38px,3.5vw,54px);margin:12px 0 20px}
+.visual-copy ul{gap:7px}
+@media(max-width:1000px){.editorial-service-visual{height:510px}}
+@media(max-width:680px){
+  .services-hero{min-height:430px;padding-top:46px;padding-bottom:46px}
+  .services-hero h1{font-size:52px;margin:38px 0 22px}
+  .editorial-services-list>button{min-height:84px;grid-template-columns:42px minmax(0,1fr) 40px;padding:13px 7px}
+  .editorial-services-list>button.active{min-height:145px;padding:16px 10px}
+  .service-row-copy b{font-size:27px}
+  .editorial-service-visual{height:450px}
+}
