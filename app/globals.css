@@ -204,3 +204,7 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .catalog-controls>.catalog-dropdown .search-dropdown-menu{z-index:40}
 .catalog-controls>.catalog-result{background:var(--ink);color:#fff;padding:16px 20px;display:flex;align-items:flex-end;justify-content:center;gap:10px;border-radius:18px}
 @media(max-width:600px){.catalog-controls>.catalog-dropdown .search-dropdown-trigger{min-height:70px}.catalog-controls>.catalog-result{min-height:78px;justify-content:flex-start}}
+
+/* Continuous footer gradient */
+.rich-footer{position:relative;overflow:hidden}
+.rich-footer-cta{overflow:visible}
