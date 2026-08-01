@@ -1,0 +1,11 @@
+﻿import Link from "next/link";
+import { getChatGPTUser, chatGPTSignInPath, chatGPTSignOutPath } from "../chatgpt-auth";
+import { properties } from "../properties";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  const user = await getChatGPTUser();
+  if (!user) return <main className="admin-login"><div><span className="brand-mark">A</span><p className="section-label">Panel privado</p><h1>Administrá tu inmobiliaria.</h1><p>Este acceso será exclusivo para el equipo autorizado. Desde acá vas a publicar propiedades, cambiar estados y revisar consultas.</p><a href={chatGPTSignInPath("/admin")}>Ingresar al panel →</a><br/><Link href="/">Volver al sitio</Link></div></main>;
+  return <main className="admin-shell"><header className="admin-topbar"><Link className="brand" href="/"><span className="brand-mark">A</span><span>ÁUREA<small>ADMINISTRACIÓN</small></span></Link><nav><Link href="/">Ver sitio</Link><a href={chatGPTSignOutPath("/")}>Cerrar sesión</a></nav></header><section className="admin-main"><div className="admin-heading"><div><p className="section-label">Panel general</p><h1>Hola, {user.fullName ?? "equipo"}.</h1><p>Todo lo importante de tu inmobiliaria, en un solo lugar.</p></div><button className="admin-button">+ Nueva propiedad</button></div><div className="admin-note"><strong>Primera versión del panel.</strong> Cuando nos confirmes el correo administrador, habilitamos la publicación y edición real.</div><div className="admin-stats"><div className="admin-stat"><span>Propiedades activas</span><strong>{properties.length}</strong></div><div className="admin-stat"><span>Consultas del mes</span><strong>24</strong></div><div className="admin-stat"><span>Visitas esta semana</span><strong>1.8k</strong></div><div className="admin-stat"><span>Operaciones abiertas</span><strong>7</strong></div></div><div className="admin-table"><p className="section-label">Publicaciones recientes</p>{properties.map(p => <div className="admin-row" key={p.id}><img src={p.image} alt=""/><strong>{p.title}</strong><span>{p.location}</span><span>{p.operation}</span><span className="admin-status">● Publicada</span></div>)}</div></section></main>;
+}
