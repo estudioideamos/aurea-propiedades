@@ -149,3 +149,7 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @keyframes lightboxIn{from{opacity:0}to{opacity:1}}@keyframes lightboxImageIn{from{opacity:0;transform:scale(.975)}to{opacity:1;transform:scale(1)}}
 @media(max-width:680px){.property-lightbox{padding:16px 12px 12px}.lightbox-stage>img{width:100%;height:calc(100vh - 125px);border-radius:18px}.lightbox-arrow{width:46px;height:46px;background:rgba(20,23,18,.82)}.lightbox-prev{left:8px}.lightbox-next{right:8px}.lightbox-close{right:15px;top:15px;width:46px;height:46px}.lightbox-counter{left:17px;top:18px}.lightbox-thumbs{height:68px;justify-content:flex-start}.lightbox-thumbs button{width:61px;height:47px}}
 @media(prefers-reduced-motion:reduce){.property-lightbox,.lightbox-stage>img{animation:none}.lightbox-close,.lightbox-arrow,.lightbox-thumbs button{transition:none}}
+
+/* Prevent sidebar card overlap while scrolling */
+.detail-sidebar{align-self:start}
+.premium-contact{position:relative;top:auto;z-index:1;margin-bottom:42px}
