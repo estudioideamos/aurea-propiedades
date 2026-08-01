@@ -49,6 +49,50 @@ const testimonials = [
   { quote: "Desde la primera visita hasta la firma todo fue ordenado, humano y transparente. Áurea hizo que una decisión enorme se sintiera liviana.", author: "SOFÍA Y TOMÁS", role: "COMPRADORES / NORDELTA" }
 ];
 const testimonialOrbitText = "VOCES REALES · EXPERIENCIAS ÁUREA · ";
+function MetricCounter({ value, suffix }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  const element = useRef<HTMLElement | null>(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const node = element.current;
+    if (!node) return;
+    let frame = 0;
+
+    const run = () => {
+      if (started.current) return;
+      started.current = true;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setDisplay(value);
+        return;
+      }
+      const duration = 1550;
+      const start = performance.now();
+      const tick = (time: number) => {
+        const progress = Math.min((time - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setDisplay(Math.round(value * eased));
+        if (progress < 1) frame = window.requestAnimationFrame(tick);
+      };
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        run();
+        observer.disconnect();
+      }
+    }, { threshold: 0.35 });
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(frame);
+    };
+  }, [value]);
+
+  return <strong ref={element} aria-label={`${value}${suffix ?? ""}`}>{display}{suffix && <span>{suffix}</span>}</strong>;
+}
 export function HomeExperience({ properties }: { properties: Property[] }) {
   const [operation,setOperation]=useState("Venta"); const [type,setType]=useState("Todos"); const [zone,setZone]=useState("Todas");
   const [testimonialIndex,setTestimonialIndex]=useState(0);
@@ -64,7 +108,7 @@ export function HomeExperience({ properties }: { properties: Property[] }) {
     <section className="approach-section"><div className="approach-image"><img src={siteAsset("/assets/aurea-core-values.png")} alt="Modelo 3D de vivienda contemporanea"/><span className="floating-dot dot-one"/><span className="floating-dot dot-two"/></div><div className="approach-copy"><p className="pill-label dark"><i/> LO QUE NOS DIFERENCIA</p><h2>Menos ruido.<br/>Mejores decisiones.</h2><p>Combinamos tecnolog&iacute;a, criterio humano y conocimiento de Buenos Aires para que cada paso tenga sentido.</p><div className="benefit-list"><article><CustomIcon kind="eye"/><div><h3>Curadur&iacute;a real</h3><p>Solo activos que superan nuestros criterios de ubicaci&oacute;n, estado y potencial.</p></div></article><article><CustomIcon kind="shield"/><div><h3>Proceso sin fricci&oacute;n</h3><p>Documentaci&oacute;n, negociaci&oacute;n y seguimiento en una sola experiencia.</p></div></article><article><CustomIcon kind="chart"/><div><h3>Valor a largo plazo</h3><p>Miramos m&aacute;s all&aacute; del precio para proteger tu decisi&oacute;n patrimonial.</p></div></article></div><Link href="/nosotros" className="text-link">Conoc&eacute; c&oacute;mo trabajamos <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div></section>
     <section className="vian-services"><div className="vian-section-head"><div><span className="section-tag">02 / SERVICIOS</span><h2>Todo lo que necesit&aacute;s,<br/>en un mismo equipo.</h2></div><Link href="/servicios" className="outline-button">Ver todos los servicios <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><div className="service-grid">{services.map((service,index)=><article key={service.title}><div className="service-number">0{index+1}</div><CustomIcon kind={service.icon}/><h3>{service.title}</h3><p>{service.text}</p><Link href={service.href} className="round-arrow"><ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></article>)}</div></section>
     <section className="properties-section" id="propiedades"><div className="vian-section-head"><div><span className="section-tag">03 / PROPIEDADES DESTACADAS</span><h2>Lugares para vivir.<br/>Activos para crecer.</h2></div><div className="property-head-actions"><div className="filter-row">{(["Venta","Alquiler"] as const).map(item=><button key={item} className={operation===item?"active":""} onClick={()=>setOperation(item)}>{item}</button>)}</div><Link href="/propiedades" className="outline-button">Ver las 16 <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div></div><div className="property-grid">{visible.slice(0,6).map((p,i)=><PropertyCard key={p.id} property={p} index={i}/>)}</div></section>
-    <section className="metrics-section"><div className="metrics-image"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1600&q=88" alt="Arquitectura residencial contemporanea"/><div><p>NUESTRO COMPROMISO</p><h2>Resultados que construyen confianza.</h2></div></div><div className="metrics-grid"><article><strong>480<span>+</span></strong><p>Operaciones acompa&ntilde;adas</p></article><article><strong>96<span>%</span></strong><p>Clientes que nos recomiendan</p></article><article><strong>24<span>h</span></strong><p>Tiempo medio de respuesta</p></article><article><strong>16</strong><p>Propiedades activas hoy</p></article></div></section>
+    <section className="metrics-section"><div className="metrics-image"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1600&q=88" alt="Arquitectura residencial contemporanea"/><div><p>NUESTRO COMPROMISO</p><h2>Resultados que construyen confianza.</h2></div></div><div className="metrics-grid"><article><MetricCounter value={480} suffix="+"/><p>Operaciones acompa&ntilde;adas</p></article><article><MetricCounter value={96} suffix="%"/><p>Clientes que nos recomiendan</p></article><article><MetricCounter value={24} suffix="h"/><p>Tiempo medio de respuesta</p></article><article><MetricCounter value={16}/><p>Propiedades activas hoy</p></article></div></section>
     <section className="process-section"><div className="vian-section-head"><div><span className="section-tag">04 / UN PROCESO CLARO</span><h2>De la idea a las llaves,<br/>sin vueltas.</h2></div></div><div className="process-cards"><article><span>01</span><CustomIcon kind="compass"/><h3>Diagn&oacute;stico</h3><p>Entendemos tu momento, presupuesto y objetivo.</p></article><article><span>02</span><CustomIcon kind="eye"/><h3>Selecci&oacute;n</h3><p>Filtramos oportunidades y organizamos recorridos.</p></article><article><span>03</span><CustomIcon kind="chart"/><h3>Negociaci&oacute;n</h3><p>Definimos estrategia, oferta y condiciones.</p></article><article><span>04</span><CustomIcon kind="key"/><h3>Cierre</h3><p>Coordinamos cada documento hasta la entrega.</p></article></div></section>
     <section className="testimonial-section testimonial-carousel"><div className="testimonial-orbit" aria-hidden="true"><span className="testimonial-orbit-text">{testimonialOrbitText.split("").map((char,index)=><i key={char+"-"+index} style={{transform:"rotate("+(index*(360/testimonialOrbitText.length))+"deg)"}}>{char===" "?"\u00a0":char}</i>)}</span><span className="testimonial-orbit-core"><img src={siteAsset("/assets/aurea-hero-vian.png")} alt=""/><b>&ldquo;</b></span></div><p className="testimonial-kicker">CLIENTES / EXPERIENCIAS / CONFIANZA</p><div className="testimonial-slide" key={testimonialIndex}><blockquote>{testimonials[testimonialIndex].quote}</blockquote><div className="quote-author"><b>{testimonials[testimonialIndex].author}</b><span>{testimonials[testimonialIndex].role}</span></div></div><div className="testimonial-controls"><button type="button" onClick={previousTestimonial} aria-label="Testimonio anterior"><ChevronLeft aria-hidden="true"/></button><div>{testimonials.map((_,index)=><button type="button" key={index} className={index===testimonialIndex?"active":""} onClick={()=>setTestimonialIndex(index)} aria-label={"Ver testimonio "+(index+1)}/>)}</div><button type="button" onClick={nextTestimonial} aria-label="Testimonio siguiente"><ChevronRight aria-hidden="true"/></button></div></section>
     <section className="faq-section"><div><span className="section-tag">05 / PREGUNTAS FRECUENTES</span><h2>Todo claro desde el principio.</h2><p>Si tu pregunta no est&aacute; ac&aacute;, escribinos. Respondemos en menos de 24 horas.</p><Link className="lime-button" href="/contacto">Hablemos <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><div className="faq-list"><details open><summary>Qu&eacute; necesito para empezar a buscar?<span/></summary><p>Con una zona aproximada, presupuesto y tipo de operaci&oacute;n alcanza para armar una primera selecci&oacute;n.</p></details><details><summary>C&oacute;mo realizan una tasaci&oacute;n?<span/></summary><p>Comparamos operaciones reales, oferta activa, estado, ubicaci&oacute;n y atributos particulares de la propiedad.</p></details><details><summary>Acompa&ntilde;an la negociaci&oacute;n y la firma?<span/></summary><p>S&iacute;. Coordinamos oferta, documentaci&oacute;n, escriban&iacute;a y seguimiento hasta la entrega de llaves.</p></details><details><summary>Puedo publicar mi propiedad con &Aacute;urea?<span/></summary><p>S&iacute;. Primero realizamos una visita, una evaluaci&oacute;n comercial y una propuesta de presentaci&oacute;n.</p></details></div></section>
