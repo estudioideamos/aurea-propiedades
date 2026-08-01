@@ -44,10 +44,13 @@ function ThemeSwitcher() {
   </aside>;
 }
 
-export function Brand() {
-  return <Link className="brand ideamos-brand" href="/" aria-label="Ideamos Propiedades, inicio"><svg className="ideamos-symbol" viewBox="0 0 236 178" aria-hidden="true"><path d="M0 0h140l96 96v82h-88v-76L46 0H0Z"/><path d="M0 108 62 46l62 62H88v70H0v-70Z"/></svg><span className="ideamos-word">ideamos</span></Link>;
+export function IdeamosSymbol() {
+  return <svg className="ideamos-symbol" viewBox="0 0 236 178" aria-hidden="true"><path d="M0 0h140l96 96v82h-88v-76L46 0H0Z"/><path d="M0 108 62 46l62 62H88v70H0v-70Z"/></svg>;
 }
 
+export function Brand() {
+  return <Link className="brand ideamos-brand" href="/" aria-label="Ideamos Propiedades, inicio"><IdeamosSymbol/><span className="ideamos-word">ideamos</span></Link>;
+}
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
@@ -64,6 +67,6 @@ export function SiteFooter() {
       <nav className="rich-footer-nav"><p>SERVICIOS</p><Link href="/servicios">Compra y venta</Link><Link href="/servicios">Inversiones</Link><Link href="/tasacion">Tasaciones</Link><Link href="/contacto">Contacto</Link><Link href="/admin">Administraci&oacute;n</Link></nav>
       <div className="rich-footer-contact"><p className="contact-kicker">ASESORAMIENTO PERSONAL</p><h3>&iquest;Te ayudamos a elegir?</h3><a className="footer-whatsapp" href="https://wa.me/541155550190" target="_blank" rel="noreferrer"><span>Hablar por WhatsApp</span><ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></a><p><MapPin aria-hidden="true"/> Av. del Libertador 2424<br/>Buenos Aires, Argentina</p><p><Clock3 aria-hidden="true"/> Lun. a vie. / 9 a 18 h</p><a href="mailto:hola@ideamos.ar">hola@ideamos.ar</a></div>
     </div>
-    <div className="rich-footer-bottom"><span>2026 IDEAMOS PROPIEDADES. TODOS LOS DERECHOS RESERVADOS.</span><div className="footer-seal"><b>I</b><small>IDEAMOS / DESDE 2014</small></div><a className="footer-credit" href="https://ideamos.ar/" target="_blank" rel="noreferrer"><span>&copy; DISE&Ntilde;O Y DESARROLLO POR</span><b>ESTUDIO IDEAMOS</b><ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></a></div>
+    <div className="rich-footer-bottom"><span>2026 IDEAMOS PROPIEDADES. TODOS LOS DERECHOS RESERVADOS.</span><div className="footer-seal"><b><IdeamosSymbol/></b><small>IDEAMOS / DESDE 2014</small></div><a className="footer-credit" href="https://ideamos.ar/" target="_blank" rel="noreferrer"><span>&copy; DISE&Ntilde;O Y DESARROLLO POR</span><b>ESTUDIO IDEAMOS</b><ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></a></div>
   </footer><div className="floating-actions" aria-label="Accesos rapidos"><button className={`go-top ${showTop?"visible":""}`} onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} type="button" aria-label="Volver arriba"><span>Volver arriba</span><ArrowUp aria-hidden="true" strokeWidth={1.9}/></button><a className="whatsapp-float" href="https://wa.me/541155550190" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WhatsApp</span><img src={siteAsset("/assets/whatsapp.svg")} alt="" aria-hidden="true"/></a></div></>;
 }
