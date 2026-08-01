@@ -129,3 +129,6 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .premium-contact h3{position:relative;font-size:42px;font-weight:700;line-height:.98;letter-spacing:-.065em;margin:15px 0 26px;padding-bottom:18px;color:#10120e}
 .premium-contact h3:after{content:"";position:absolute;left:0;bottom:0;width:86px;height:5px;border-radius:999px;background:var(--accent)}
 @media(max-width:680px){.premium-contact h3{font-size:40px}}
+
+/* Uppercase related property pills */
+.related-image span{text-transform:uppercase;letter-spacing:.04em}
