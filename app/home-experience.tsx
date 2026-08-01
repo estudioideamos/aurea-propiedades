@@ -1,14 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Crosshair, Heart, House, KeyRound, ScanEye, ShieldCheck, TrendingUp, type LucideIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowUpRight, Check, ChevronDown, Crosshair, Heart, House, KeyRound, ScanEye, ShieldCheck, TrendingUp, type LucideIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice, type Property } from "./properties";
 import { SiteFooter, SiteHeader } from "./site-chrome";
 
 type IconKind = "home" | "key" | "chart" | "compass" | "shield" | "eye";
 const iconMap: Record<IconKind, LucideIcon> = { home: House, key: KeyRound, chart: TrendingUp, compass: Crosshair, shield: ShieldCheck, eye: ScanEye };
 function CustomIcon({ kind }: { kind: IconKind }) { const Icon = iconMap[kind]; return <span className={`custom-icon icon-${kind}`} aria-hidden="true"><Icon strokeWidth={1.8}/></span>; }
+type SearchDropdownProps = { label: string; value: string; options: string[]; onChange: (value: string) => void };
+function SearchDropdown({ label, value, options, onChange }: SearchDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const close = (event: PointerEvent) => { if (root.current && !root.current.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, []);
+  const choose = (option: string) => { onChange(option); setOpen(false); };
+  return <div className={"search-dropdown " + (open ? "open" : "")} ref={root}>
+    <button className="search-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(current => !current)} onKeyDown={event => { if (event.key === "Escape") setOpen(false); if (event.key === "ArrowDown") { event.preventDefault(); setOpen(true); } }}>
+      <span><small>{label}</small><b>{value}</b></span><ChevronDown aria-hidden="true" strokeWidth={1.8}/>
+    </button>
+    {open && <div className="search-dropdown-menu" role="listbox" aria-label={label}>{options.map(option => <button type="button" role="option" aria-selected={option === value} className={option === value ? "selected" : ""} key={option} onClick={() => choose(option)}><span>{option}</span>{option === value && <Check aria-hidden="true" strokeWidth={2.2}/>}</button>)}</div>}
+  </div>;
+}
+
 
 export function PropertyCard({ property, index }: { property: Property; index: number }) {
   const [favorite, setFavorite] = useState(false);
@@ -28,7 +46,7 @@ export function HomeExperience({ properties }: { properties: Property[] }) {
   const runSearch=()=>document.getElementById("propiedades")?.scrollIntoView({behavior:"smooth"});
   return <main className="vian-site"><SiteHeader/>
     <section className="vian-hero"><img className="vian-hero-image" src="/assets/aurea-hero-vian.png" alt="Residencia contemporanea seleccionada por Aurea"/><div className="vian-hero-shade"/><div className="vian-hero-copy"><p className="pill-label"><i/> INMOBILIARIA BOUTIQUE</p><h1>Espacios excepcionales,<br/><span>guiados por tu forma de vivir.</span></h1><p className="hero-description">Seleccionamos propiedades con arquitectura, ubicaci&oacute;n y valor real. Te acompa&ntilde;amos con criterio desde la primera visita hasta la firma.</p><Link href="/propiedades" className="lime-button">Explorar propiedades <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><aside className="core-card"><div><p>VALOR CENTRAL</p><h2>Elegir bien cambia todo.</h2><Link href="/nosotros">Nuestro enfoque <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><img src="/assets/aurea-core-values.png" alt="Maqueta arquitectonica Aurea"/></aside><div className="hero-scroll"><span>SCROLL</span><i/></div></section>
-    <section className="floating-search"><div className="search-title"><CustomIcon kind="compass"/><div><span>BUSQUEDA PERSONALIZADA</span><b>Encontr&aacute; tu lugar</b></div></div><div className="operation-tabs">{(["Venta","Alquiler"] as const).map(item=><button className={operation===item?"active":""} onClick={()=>setOperation(item)} key={item}>{item}</button>)}</div><label><span>TIPO DE PROPIEDAD</span><select value={type} onChange={e=>setType(e.target.value)}><option>Todos</option><option>Casa</option><option>Departamento</option><option>PH</option><option>Terreno</option></select></label><label><span>ZONA</span><select value={zone} onChange={e=>setZone(e.target.value)}><option>Todas</option><option>CABA</option><option>Zona Norte</option></select></label><button className="search-button" onClick={runSearch}>Buscar <ArrowUpRight className="mini-arrow" aria-hidden="true"/></button></section>
+    <section className="floating-search"><div className="search-title"><CustomIcon kind="compass"/><div><span>BUSQUEDA PERSONALIZADA</span><b>Encontr&aacute; tu lugar</b></div></div><div className="operation-tabs">{(["Venta","Alquiler"] as const).map(item=><button className={operation===item?"active":""} onClick={()=>setOperation(item)} key={item}>{item}</button>)}</div><SearchDropdown label="TIPO DE PROPIEDAD" value={type} options={["Todos","Casa","Departamento","PH","Terreno"]} onChange={setType}/><SearchDropdown label="ZONA" value={zone} options={["Todas","CABA","Zona Norte"]} onChange={setZone}/><button className="search-button" onClick={runSearch}>Buscar <ArrowUpRight className="mini-arrow" aria-hidden="true"/></button></section>
     <section className="vian-intro"><div className="section-tag">01 / NUESTRA MIRADA</div><div><h2>Propiedades que se sienten bien <span>antes de entrar.</span></h2><p>No publicamos por volumen. Curamos una cartera acotada y acompa&ntilde;amos cada operaci&oacute;n con informaci&oacute;n clara, sensibilidad arquitect&oacute;nica y estrategia comercial.</p></div><div className="intro-badge"><strong>12</strong><span>A&Ntilde;OS<br/>DE EXPERIENCIA</span></div></section>
     <section className="approach-section"><div className="approach-image"><img src="/assets/aurea-core-values.png" alt="Modelo 3D de vivienda contemporanea"/><span className="floating-dot dot-one"/><span className="floating-dot dot-two"/></div><div className="approach-copy"><p className="pill-label dark"><i/> LO QUE NOS DIFERENCIA</p><h2>Menos ruido.<br/>Mejores decisiones.</h2><p>Combinamos tecnolog&iacute;a, criterio humano y conocimiento de Buenos Aires para que cada paso tenga sentido.</p><div className="benefit-list"><article><CustomIcon kind="eye"/><div><h3>Curadur&iacute;a real</h3><p>Solo activos que superan nuestros criterios de ubicaci&oacute;n, estado y potencial.</p></div></article><article><CustomIcon kind="shield"/><div><h3>Proceso sin fricci&oacute;n</h3><p>Documentaci&oacute;n, negociaci&oacute;n y seguimiento en una sola experiencia.</p></div></article><article><CustomIcon kind="chart"/><div><h3>Valor a largo plazo</h3><p>Miramos m&aacute;s all&aacute; del precio para proteger tu decisi&oacute;n patrimonial.</p></div></article></div><Link href="/nosotros" className="text-link">Conoc&eacute; c&oacute;mo trabajamos <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div></section>
     <section className="vian-services"><div className="vian-section-head"><div><span className="section-tag">02 / SERVICIOS</span><h2>Todo lo que necesit&aacute;s,<br/>en un mismo equipo.</h2></div><Link href="/servicios" className="outline-button">Ver todos los servicios <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><div className="service-grid">{services.map((service,index)=><article key={service.title}><div className="service-number">0{index+1}</div><CustomIcon kind={service.icon}/><h3>{service.title}</h3><p>{service.text}</p><Link href={service.href} className="round-arrow"><ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></article>)}</div></section>
