@@ -399,3 +399,15 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 /* User-tuned testimonial notch geometry */
 .testimonial-carousel:before{border-radius:50%;width:166px;height:160px;top:-80px}
 @media(max-width:600px){.testimonial-carousel:before{width:148px;height:138px;top:-69px}}
+/* Readable catalog dropdown option labels */
+.catalog-controls>.catalog-dropdown .search-dropdown-menu button{min-height:58px;padding:16px 17px;font-size:16px;font-weight:750}
+.catalog-controls>.catalog-dropdown .search-dropdown-menu button>span{font-size:16px!important;font-weight:750;letter-spacing:-.01em;line-height:1.2}
+.catalog-controls>.catalog-dropdown .search-dropdown-menu button svg{width:18px;height:18px}
+/* More compact catalog hero */
+.catalog-hero{min-height:500px;padding-top:62px;padding-bottom:62px}
+.catalog-hero h1{font-size:clamp(60px,7vw,100px);margin:42px 0 28px}
+.catalog-hero-bottom{align-items:center}
+@media(max-width:900px){.catalog-hero{min-height:520px}}
+@media(max-width:600px){.catalog-hero{min-height:500px;padding-top:48px;padding-bottom:48px}.catalog-hero h1{font-size:52px;margin:38px 0 28px}}
+/* Final continuous testimonial legend */
+.testimonial-carousel .testimonial-orbit-text{color:var(--ink);inset:10px}
