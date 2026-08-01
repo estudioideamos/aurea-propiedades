@@ -114,3 +114,13 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 /* Match recommended-property emphasis with home cards */
 .related-grid h3,.related-grid h3 a{font-weight:700;letter-spacing:-.055em;color:#10120e}
 .related-grid strong{font-weight:800;letter-spacing:-.025em;color:#0d0f0c}
+
+/* Premium aligned floating search selects */
+.floating-search label{position:relative;display:grid;grid-template-rows:auto auto;align-content:center;gap:8px;padding:16px 48px 15px 22px;transition:background-color .3s ease,box-shadow .3s ease,transform .3s cubic-bezier(.2,.75,.2,1)}
+.floating-search label>span{display:block;line-height:1;font-size:8px;letter-spacing:.14em}
+.floating-search label:after{content:"";position:absolute;right:23px;top:50%;width:7px;height:7px;border-right:1.7px solid var(--ink);border-bottom:1.7px solid var(--ink);transform:translateY(-35%) rotate(45deg);pointer-events:none;transition:transform .3s ease,border-color .3s ease}
+.floating-search select{appearance:none;-webkit-appearance:none;width:100%;min-width:0;border:0;outline:0;background:transparent;padding:0 24px 0 0;color:var(--ink);font-size:13px;font-weight:700;line-height:1.25;cursor:pointer}
+.floating-search select:focus{outline:0}.floating-search label:focus-within{background:#f7f6ef;box-shadow:inset 0 0 0 1px rgba(23,26,21,.16)}
+.floating-search label:focus-within:after{border-color:#5c7216;transform:translateY(5%) rotate(225deg)}
+@media(hover:hover){.floating-search label:hover{background:#f7f6ef;transform:translateY(-2px)}}
+@media(max-width:600px){.floating-search label{min-height:67px;padding:14px 46px 13px 18px}.floating-search label:after{right:20px}}
