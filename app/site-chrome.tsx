@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUp, ArrowUpRight, Clock3, House, Instagram, Linkedin, MapPin, MessageCircle } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Clock3, House, Instagram, Linkedin, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 \u00c1UREA \u00b7 ";
@@ -26,5 +26,5 @@ export function SiteFooter() {
       <div className="rich-footer-contact"><p className="contact-kicker">ASESORAMIENTO PERSONAL</p><h3>&iquest;Te ayudamos a elegir?</h3><a className="footer-whatsapp" href="https://wa.me/541155550190" target="_blank" rel="noreferrer"><span>Hablar por WhatsApp</span><ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></a><p><MapPin aria-hidden="true"/> Av. del Libertador 2424<br/>Buenos Aires, Argentina</p><p><Clock3 aria-hidden="true"/> Lun. a vie. / 9 a 18 h</p><a href="mailto:hola@aureapropiedades.com">hola@aureapropiedades.com</a></div>
     </div>
     <div className="rich-footer-bottom"><span>2026 &Aacute;UREA PROPIEDADES. TODOS LOS DERECHOS RESERVADOS.</span><div className="footer-seal"><b>A</b><small>&Aacute;UREA / DESDE 2014</small></div><a className="footer-credit" href="https://ideamos.ar/" target="_blank" rel="noreferrer"><span>&copy; DISE&Ntilde;O Y DESARROLLO POR</span><b>ESTUDIO IDEAMOS</b><ArrowUpRight aria-hidden="true" strokeWidth={1.8}/></a></div>
-  </footer><div className="floating-actions" aria-label="Accesos rapidos"><button className={`go-top ${showTop?"visible":""}`} onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} type="button" aria-label="Volver arriba"><span>Volver arriba</span><ArrowUp aria-hidden="true" strokeWidth={1.9}/></button><a className="whatsapp-float" href="https://wa.me/541155550190" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WhatsApp</span><MessageCircle aria-hidden="true" strokeWidth={1.9}/></a></div></>;
+  </footer><div className="floating-actions" aria-label="Accesos rapidos"><button className={`go-top ${showTop?"visible":""}`} onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} type="button" aria-label="Volver arriba"><span>Volver arriba</span><ArrowUp aria-hidden="true" strokeWidth={1.9}/></button><a className="whatsapp-float" href="https://wa.me/541155550190" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WhatsApp</span><img src="/assets/whatsapp.svg" alt="" aria-hidden="true"/></a></div></>;
 }

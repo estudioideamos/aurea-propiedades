@@ -181,3 +181,15 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @keyframes testimonialSwap{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.testimonial-carousel{margin:8px;padding:60px 18px 65px}.testimonial-orbit{width:158px;height:158px;margin-bottom:32px}.testimonial-orbit-core{width:108px;height:108px;border-width:5px}.testimonial-orbit-core b{font-size:67px}.testimonial-orbit-text i{font-size:6.5px}.testimonial-kicker{font-size:8px}.testimonial-carousel blockquote{font-size:31px;line-height:1.08}.testimonial-controls{gap:14px}.testimonial-controls>button{width:47px;height:47px}}
 @media(prefers-reduced-motion:reduce){.testimonial-orbit-text{animation:none}.testimonial-slide{animation:none}}
+
+/* Sculpted testimonial boundary and WhatsApp brand actions */
+.testimonial-carousel{overflow:visible;padding-top:76px}
+.testimonial-carousel:before{content:"";position:absolute;left:50%;top:-130px;width:260px;height:260px;transform:translateX(-50%);border-radius:50%;background:var(--paper);z-index:0;pointer-events:none}
+.testimonial-carousel:after{content:"";position:absolute;left:50%;top:-55px;width:410px;height:260px;transform:translateX(-50%);background:radial-gradient(circle,rgba(207,255,61,.12),transparent 68%);z-index:0;pointer-events:none}
+.testimonial-carousel>*{position:relative;z-index:1}
+.testimonial-carousel .testimonial-orbit{z-index:2;margin-top:-171px;margin-bottom:55px}
+.whatsapp-float img{width:24px;height:24px;display:block;object-fit:contain;filter:brightness(0) invert(1)}
+.premium-contact>a[href^="https://wa.me/"]{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:13px;padding:14px 18px;border-radius:999px;background:#25d366;color:#fff;font-size:11px;font-weight:800;text-decoration:none;box-shadow:0 10px 24px rgba(37,211,102,.2);transition:background-color .3s ease,transform .3s ease,box-shadow .3s ease}
+.premium-contact>a[href^="https://wa.me/"] img{width:19px;height:19px;display:block;object-fit:contain;filter:brightness(0) invert(1)}
+@media(hover:hover){.premium-contact>a[href^="https://wa.me/"]:hover{background:#1fb858;transform:translateY(-3px);box-shadow:0 15px 30px rgba(37,211,102,.28)}}
+@media(max-width:600px){.testimonial-carousel{padding-top:54px}.testimonial-carousel:before{top:-108px;width:216px;height:216px}.testimonial-carousel .testimonial-orbit{margin-top:-141px;margin-bottom:40px}}
