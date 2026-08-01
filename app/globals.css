@@ -193,3 +193,7 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .premium-contact>a[href^="https://wa.me/"] img{width:19px;height:19px;display:block;object-fit:contain;filter:brightness(0) invert(1)}
 @media(hover:hover){.premium-contact>a[href^="https://wa.me/"]:hover{background:#1fb858;transform:translateY(-3px);box-shadow:0 15px 30px rgba(37,211,102,.28)}}
 @media(max-width:600px){.testimonial-carousel{padding-top:54px}.testimonial-carousel:before{top:-132px;width:184px;height:184px}.testimonial-carousel .testimonial-orbit{width:136px;height:136px;margin-top:-141px;margin-bottom:58px}.testimonial-carousel .testimonial-orbit-core{width:94px;height:94px}.testimonial-carousel .testimonial-orbit-core b{font-size:60px}}
+
+/* Refined metric suffix alignment */
+.metrics-grid strong{display:inline-flex;align-items:baseline;align-self:flex-start;gap:.075em;line-height:.92;font-variant-numeric:tabular-nums}
+.metrics-grid strong span{display:inline-block;font-size:.38em;line-height:1;letter-spacing:0;font-weight:700;color:#747970;transform:translateY(-.02em)}
