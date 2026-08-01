@@ -197,3 +197,10 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 /* Refined metric suffix alignment */
 .metrics-grid strong{display:inline-flex;align-items:baseline;align-self:flex-start;gap:.075em;line-height:.92;font-variant-numeric:tabular-nums}
 .metrics-grid strong span{display:inline-block;font-size:.38em;line-height:1;letter-spacing:0;font-weight:700;color:#747970;transform:translateY(-.02em)}
+
+/* Catalog dropdowns aligned with home search */
+.catalog-controls>.catalog-dropdown{display:block;align-items:initial;gap:0;padding:0;background:#fff;color:var(--ink);border-radius:18px}
+.catalog-controls>.catalog-dropdown .search-dropdown-trigger{min-height:90px;padding:17px 22px}
+.catalog-controls>.catalog-dropdown .search-dropdown-menu{z-index:40}
+.catalog-controls>.catalog-result{background:var(--ink);color:#fff;padding:16px 20px;display:flex;align-items:flex-end;justify-content:center;gap:10px;border-radius:18px}
+@media(max-width:600px){.catalog-controls>.catalog-dropdown .search-dropdown-trigger{min-height:70px}.catalog-controls>.catalog-result{min-height:78px;justify-content:flex-start}}
