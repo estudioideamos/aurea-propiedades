@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowUp, ArrowUpRight, Building2, Clock3, Instagram, Linkedin, MapPin, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 AUREA \u00b7 ";
+
 function Brand() {
   return <Link className="brand" href="/" aria-label="Aurea Propiedades, inicio"><span className="brand-mark"><i/><i/></span><span><b>&Aacute;UREA</b><small>PROPIEDADES</small></span></Link>;
 }
