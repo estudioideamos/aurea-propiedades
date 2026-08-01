@@ -4,6 +4,7 @@ import { ArrowUpRight, Bath, BedDouble, CalendarDays, CarFront, Check, Home, Map
 import { formatPrice, properties } from "../../properties";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { PropertyActions } from "./property-actions";
+import { PropertyGallery } from "./property-gallery";
 
 const galleryPool=[
   "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1600&q=86",
@@ -25,7 +26,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const mapUrl=`https://www.google.com/maps?q=${encodeURIComponent(property.location)}&output=embed`;
   return <main className="detail-page premium-detail"><SiteHeader/>
     <section className="detail-intro"><div className="detail-breadcrumb"><Link href="/">Inicio</Link><span>/</span><Link href="/propiedades">Propiedades</Link><span>/</span><b>{property.title}</b></div><div className="detail-intro-grid"><div><div className="detail-pills"><span>{property.operation}</span><span>Destacada</span></div><h1>{property.title}</h1><p><MapPin aria-hidden="true" strokeWidth={1.8}/>{property.location}</p></div><div className="detail-price"><small>VALOR DE PUBLICACION</small><strong>{formatPrice(property)}</strong><span>Ref. AUR-{String(property.id).padStart(4,"0")}</span></div></div><PropertyActions title={property.title}/></section>
-    <section className="detail-gallery-grid"><a className="gallery-main" href={gallery[0]} target="_blank" rel="noreferrer"><img src={gallery[0]} alt={property.title}/><span>Imagen principal</span></a>{gallery.slice(1).map((image,index)=><a href={image} target="_blank" rel="noreferrer" key={image} className={`gallery-small gallery-${index+1}`}><img src={image} alt={`${property.title}, vista ${index+2}`}/>{index===3&&<span className="gallery-count">VER GALERIA / 05</span>}</a>)}</section>
+    <PropertyGallery images={gallery} title={property.title}/>
     <section className="property-overview"><article><Home aria-hidden="true" strokeWidth={1.7}/><span>TIPO</span><b>{property.type}</b></article><article><BedDouble aria-hidden="true" strokeWidth={1.7}/><span>DORMITORIOS</span><b>{property.bedrooms}</b></article><article><Bath aria-hidden="true" strokeWidth={1.7}/><span>BA&Ntilde;OS</span><b>{property.bathrooms}</b></article><article><Maximize2 aria-hidden="true" strokeWidth={1.7}/><span>SUPERFICIE</span><b>{property.area} m2</b></article><article><CarFront aria-hidden="true" strokeWidth={1.7}/><span>COCHERAS</span><b>{garage}</b></article><article><CalendarDays aria-hidden="true" strokeWidth={1.7}/><span>ANTIGUEDAD</span><b>{age}</b></article></section>
     <section className="detail-layout"><div className="detail-content">
       <section className="detail-block description-block"><p className="detail-block-label">01 / DESCRIPCI&Oacute;N</p><h2>Un espacio pensado<br/>para vivir bien.</h2><p>{property.description} La propuesta combina una distribuci&oacute;n funcional, buena entrada de luz y ambientes preparados para disfrutar todos los d&iacute;as. Su ubicaci&oacute;n permite acceder con facilidad a servicios, espacios verdes y los principales corredores de la zona.</p><p>Una propiedad seleccionada por &Aacute;urea por su equilibrio entre arquitectura, calidad constructiva y potencial de valor.</p></section>

@@ -132,3 +132,20 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 
 /* Uppercase related property pills */
 .related-image span{text-transform:uppercase;letter-spacing:.04em}
+
+/* Interactive property lightbox */
+.detail-gallery-grid button{position:relative;overflow:hidden;border:0;padding:0;background:transparent;border-radius:25px;cursor:zoom-in;text-align:left;color:inherit}
+.detail-gallery-grid button:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.2),transparent 40%);pointer-events:none}
+.detail-gallery-grid button:focus-visible{outline:3px solid var(--accent);outline-offset:-5px}
+.property-lightbox{position:fixed;inset:0;z-index:500;background:rgba(9,11,8,.97);color:#fff;padding:24px 28px 18px;display:grid;grid-template-rows:minmax(0,1fr) auto;animation:lightboxIn .3s ease both}
+.lightbox-stage{position:relative;min-height:0;display:grid;place-items:center;touch-action:pan-y}
+.lightbox-stage>img{width:min(82vw,1500px);height:calc(100vh - 145px);object-fit:contain;border-radius:24px;animation:lightboxImageIn .38s cubic-bezier(.2,.75,.2,1) both}
+.lightbox-close,.lightbox-arrow{position:absolute;z-index:3;border:1px solid rgba(255,255,255,.25);background:rgba(20,23,18,.72);color:#fff;border-radius:50%;display:grid;place-items:center;backdrop-filter:blur(12px);transition:background-color .3s ease,color .3s ease,transform .3s cubic-bezier(.2,.75,.2,1)}
+.lightbox-close{right:28px;top:24px;width:50px;height:50px}.lightbox-close svg{width:22px;height:22px}
+.lightbox-arrow{top:50%;width:58px;height:58px;transform:translateY(-50%)}.lightbox-arrow svg{width:25px;height:25px}.lightbox-prev{left:0}.lightbox-next{right:0}
+.lightbox-counter{position:absolute;z-index:3;left:30px;top:30px;display:flex;align-items:baseline;gap:7px;font-family:var(--font-sans);letter-spacing:-.04em}.lightbox-counter b{font-size:26px}.lightbox-counter span{font-size:11px;color:#93998e}
+.lightbox-thumbs{height:78px;display:flex;justify-content:center;align-items:end;gap:8px;overflow-x:auto;padding-top:10px}.lightbox-thumbs button{width:72px;height:54px;flex:0 0 auto;padding:3px;border:1px solid transparent;border-radius:13px;background:transparent;opacity:.48;transition:opacity .25s ease,border-color .25s ease,transform .25s ease}.lightbox-thumbs button.active{opacity:1;border-color:var(--accent);transform:translateY(-4px)}.lightbox-thumbs img{height:100%;border-radius:9px}
+@media(hover:hover){.detail-gallery-grid button:hover img{transform:scale(1.055)}.lightbox-close:hover,.lightbox-arrow:hover{background:var(--accent);color:var(--ink)}.lightbox-arrow:hover{transform:translateY(-50%) scale(1.08)}}
+@keyframes lightboxIn{from{opacity:0}to{opacity:1}}@keyframes lightboxImageIn{from{opacity:0;transform:scale(.975)}to{opacity:1;transform:scale(1)}}
+@media(max-width:680px){.property-lightbox{padding:16px 12px 12px}.lightbox-stage>img{width:100%;height:calc(100vh - 125px);border-radius:18px}.lightbox-arrow{width:46px;height:46px;background:rgba(20,23,18,.82)}.lightbox-prev{left:8px}.lightbox-next{right:8px}.lightbox-close{right:15px;top:15px;width:46px;height:46px}.lightbox-counter{left:17px;top:18px}.lightbox-thumbs{height:68px;justify-content:flex-start}.lightbox-thumbs button{width:61px;height:47px}}
+@media(prefers-reduced-motion:reduce){.property-lightbox,.lightbox-stage>img{animation:none}.lightbox-close,.lightbox-arrow,.lightbox-thumbs button{transition:none}}
