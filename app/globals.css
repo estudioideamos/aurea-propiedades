@@ -396,3 +396,6 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 .catalog-intro>p{grid-column:2;font-size:14px;line-height:1.75;margin:0 0 5px}
 @media(max-width:900px){.catalog-intro{grid-template-columns:1fr}.catalog-intro .section-tag,.catalog-intro>p{grid-column:1}.catalog-intro h2{font-size:clamp(52px,8vw,72px)}}
 @media(max-width:600px){.catalog-intro{gap:22px}.catalog-intro h2{font-size:47px}.catalog-intro>p{font-size:13px}}
+/* User-tuned testimonial notch geometry */
+.testimonial-carousel:before{border-radius:50%;width:166px;height:160px;top:-80px}
+@media(max-width:600px){.testimonial-carousel:before{width:148px;height:138px;top:-69px}}
