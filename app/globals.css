@@ -775,3 +775,8 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
   .valuation-faq details{padding:22px 0}.valuation-faq summary{font-size:17px}.valuation-faq details p{margin-right:4px;font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){.valuation-method article,.valuation-select>button svg,.valuation-select>div{animation:none;transition:none}}
+/* Keep the contact dropdown trigger aligned with the other form fields */
+.contact-vian-form .contact-objective-trigger{grid-column:auto;width:100%;min-width:0;min-height:42px;margin:0;padding:8px 0;border:0;border-bottom:1px solid #c9ccc4;border-radius:0;background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:15px;font-size:14px;font-weight:500;letter-spacing:0;text-align:left}
+.contact-vian-form .contact-objective-trigger:hover{background:transparent;color:var(--ink)}
+.contact-vian-form .contact-objective-trigger svg{color:var(--ink)}
+@media(max-width:680px){.contact-vian-form .contact-objective-trigger{min-height:48px;width:100%}}
