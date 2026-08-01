@@ -51,7 +51,7 @@ export function ServicesExperience() {
       <p>Una gestión integral, clara y personalizada. Activamos el equipo indicado para que cada decisión tenga respaldo y cada proceso avance.</p>
     </header>
     <div className="editorial-services-layout">
-      <div className="editorial-services-list" role="tablist" aria-label="Servicios de Áurea">
+      <div className="editorial-services-list" role="tablist" aria-label="Servicios de Ideamos">
         {services.map((service, index) => <button key={service.number} type="button" role="tab" aria-selected={active === index} className={active === index ? "active" : ""} onMouseEnter={() => setActive(index)} onFocus={() => setActive(index)} onClick={() => setActive(index)}>
           <span className="service-number">/ {service.number} /</span>
           <span className="service-row-copy"><b>{service.title}</b><small>{service.description}</small></span>
@@ -60,7 +60,7 @@ export function ServicesExperience() {
       </div>
       <article className="editorial-service-visual" key={current.number}>
         <img src={current.image} alt={current.title}/><div className="editorial-service-shade"/>
-        <span className="visual-index">ÁUREA / {current.number}</span>
+        <span className="visual-index">IDEAMOS / {current.number}</span>
         <div className="visual-copy"><p>SERVICIO ACTIVO</p><h3>{current.title}</h3><ul>{current.points.map(point => <li key={point}><Check aria-hidden="true" strokeWidth={2.3}/>{point}</li>)}</ul></div>
       </article>
     </div>

@@ -9,10 +9,10 @@ const socialImage = `${siteUrl}/og.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${siteUrl}/`),
-  title: "Aurea Propiedades | Espacios excepcionales",
+  title: "Ideamos Propiedades | Espacios excepcionales",
   description: "Propiedades seleccionadas para comprar, alquilar e invertir en Buenos Aires.",
-  openGraph: { title: "Aurea Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [{ url: socialImage, width: 1200, height: 630 }], locale: "es_AR", type: "website" },
-  twitter: { card: "summary_large_image", title: "Aurea Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [socialImage] },
+  openGraph: { title: "Ideamos Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [{ url: socialImage, width: 1200, height: 630 }], locale: "es_AR", type: "website" },
+  twitter: { card: "summary_large_image", title: "Ideamos Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [socialImage] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
