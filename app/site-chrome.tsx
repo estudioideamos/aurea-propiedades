@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUp, ArrowUpRight, Building2, Clock3, Instagram, Linkedin, MapPin, MessageCircle } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Clock3, House, Instagram, Linkedin, MapPin, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 AUREA \u00b7 ";
+const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 \u00c1UREA \u00b7 ";
 
 function Brand() {
   return <Link className="brand" href="/" aria-label="Aurea Propiedades, inicio"><span className="brand-mark"><i/><i/></span><span><b>&Aacute;UREA</b><small>PROPIEDADES</small></span></Link>;
@@ -19,7 +19,7 @@ export function SiteFooter() {
   const [showTop, setShowTop] = useState(false);
   useEffect(() => { const onScroll=()=>setShowTop(window.scrollY>520); onScroll(); window.addEventListener("scroll",onScroll,{passive:true}); return()=>window.removeEventListener("scroll",onScroll); },[]);
   return <><footer className="site-footer rich-footer">
-    <section className="rich-footer-cta"><div><p className="rich-footer-eyebrow"><i/> PROPIEDADES PARA VIVIR MEJOR</p><h2>Tu pr&oacute;xima historia merece<br/><em>un lugar extraordinario.</em></h2></div><Link className="footer-orbit-link" href="/propiedades" aria-label="Explorar propiedades"><span className="footer-orbit-text" aria-hidden="true">{orbitText.split("").map((char,index)=><i key={`${char}-${index}`} style={{transform:`rotate(${index*(360/orbitText.length)}deg)`}}>{char===" "?"\u00a0":char}</i>)}</span><span className="footer-orbit-core"><Building2 aria-hidden="true" strokeWidth={1.55}/></span></Link></section>
+    <section className="rich-footer-cta"><div><p className="rich-footer-eyebrow"><i/> PROPIEDADES PARA VIVIR MEJOR</p><h2><span>Tu pr&oacute;xima historia merece</span><em>un lugar extraordinario.</em></h2></div><Link className="footer-orbit-link" href="/propiedades" aria-label="Explorar propiedades"><span className="footer-orbit-text" aria-hidden="true">{orbitText.split("").map((char,index)=><i key={`${char}-${index}`} style={{transform:`rotate(${index*(360/orbitText.length)}deg)`}}>{char===" "?"\u00a0":char}</i>)}</span><span className="footer-orbit-core"><House aria-hidden="true" strokeWidth={1.65}/></span></Link></section>
     <div className="rich-footer-main"><div className="rich-footer-brand"><Brand/><p>Una inmobiliaria boutique que combina arquitectura, estrategia y cercan&iacute;a para acompa&ntilde;ar decisiones que importan.</p><div className="footer-social"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram aria-hidden="true" strokeWidth={1.7}/></a><a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin aria-hidden="true" strokeWidth={1.7}/></a></div></div>
       <nav className="rich-footer-nav"><p>EXPLOR&Aacute;</p><Link href="/propiedades">Propiedades</Link><Link href="/propiedades?operacion=venta">Comprar</Link><Link href="/propiedades?operacion=alquiler">Alquilar</Link><Link href="/tasacion">Vender</Link><Link href="/nosotros">Nuestra mirada</Link></nav>
       <nav className="rich-footer-nav"><p>SERVICIOS</p><Link href="/servicios">Compra y venta</Link><Link href="/servicios">Inversiones</Link><Link href="/tasacion">Tasaciones</Link><Link href="/contacto">Contacto</Link><Link href="/admin">Administraci&oacute;n</Link></nav>
