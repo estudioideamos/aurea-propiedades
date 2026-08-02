@@ -1,9 +1,11 @@
 import { getDb } from "../../../db";
 import { leads } from "../../../db/schema";
+import { ensureDatabaseSchema } from "../../../db/ensure-schema";
 
 type LeadPayload = { propertyId?: number; name?: string; email?: string; phone?: string; message?: string; website?: string };
 
 export async function POST(request: Request) {
+  await ensureDatabaseSchema();
   try {
     const payload = await request.json() as LeadPayload;
     if (payload.website) return Response.json({ ok: true }, { status: 201 });

@@ -3,6 +3,7 @@ import { getChatGPTUser } from "../../../chatgpt-auth";
 import { properties as seedProperties, type Property } from "../../../properties";
 import { getDb } from "../../../../db";
 import { propertyRecords } from "../../../../db/schema";
+import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
 const ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 const validOperations = new Set(["Venta", "Alquiler"]);
@@ -36,6 +37,7 @@ function serialize(row: typeof propertyRecords.$inferSelect) {
 }
 
 async function ensureSeeded() {
+  await ensureDatabaseSchema();
   const db = getDb();
   const [summary] = await db.select({ total: sql<number>`count(*)` }).from(propertyRecords);
   if (Number(summary?.total ?? 0) > 0) return;
@@ -154,6 +156,7 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   if (!(await isAuthorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  await ensureDatabaseSchema();
   const id = Number(new URL(request.url).searchParams.get("id"));
   if (!id) return Response.json({ error: "Falta el identificador." }, { status: 400 });
   const [deleted] = await getDb().delete(propertyRecords).where(eq(propertyRecords.id, id)).returning({ id: propertyRecords.id });

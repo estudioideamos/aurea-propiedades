@@ -1,21 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, BarChart3, Building2, Check, CircleDollarSign, Copy, Eye, FileText, Home, Image as ImageIcon, LayoutDashboard, LoaderCircle, Mail, MapPin, Menu, MessageSquareText, Pencil, Phone, Plus, RefreshCw, Search, Star, Trash2, Upload, X } from "lucide-react";
+import { Activity, ArrowUpRight, BarChart3, Building2, Check, CircleDollarSign, Copy, Eye, FileText, Globe2, Home, Image as ImageIcon, LayoutDashboard, LoaderCircle, Mail, MapPin, Menu, MessageSquareText, Pencil, Phone, Plus, RefreshCw, Search, Settings, ShieldCheck, Sparkles, Star, Trash2, TrendingUp, Upload, Users, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { formatPrice, type Property } from "../properties";
+import { developments } from "../developments";
 import { Brand } from "../site-chrome";
 
 type AdminStatus = "published" | "draft" | "reserved";
 type AdminProperty = Property & { status: AdminStatus; updatedAt?: string };
 type AdminLead = { id: number; propertyId: number | null; name: string; email: string | null; phone: string | null; message: string; status: "new" | "contacted" | "closed"; createdAt: string };
 type Draft = Omit<AdminProperty, "id"> & { id?: number; amenitiesText: string; gallery: string[] };
-type View = "overview" | "properties" | "leads";
+type View = "overview" | "properties" | "developments" | "leads" | "performance" | "settings";
 type Props = { initialProperties: Property[]; userName: string; signOutPath: string };
 
 const emptyDraft: Draft = { slug: "", title: "", location: "", zone: "CABA", operation: "Venta", type: "Casa", currency: "USD", price: 0, rooms: 3, bedrooms: 2, bathrooms: 1, area: 80, coveredArea: 65, garages: 1, age: "A estrenar", condition: "Excelente", orientation: "Norte", image: "", gallery: [], description: "", amenities: [], amenitiesText: "", featured: false, status: "draft" };
 const statusLabel: Record<AdminStatus, string> = { published: "Publicada", draft: "Borrador", reserved: "Reservada" };
 const leadLabel: Record<AdminLead["status"], string> = { new: "Nueva", contacted: "Contactada", closed: "Cerrada" };
+const viewCopy: Record<View, { eyebrow: string; title: string }> = {
+  overview: { eyebrow: "PANEL GENERAL", title: "Tu operación, de un vistazo." },
+  properties: { eyebrow: "INVENTARIO", title: "Toda la cartera." },
+  developments: { eyebrow: "EMPRENDIMIENTOS", title: "Proyectos seleccionados." },
+  leads: { eyebrow: "CONSULTAS", title: "Personas interesadas." },
+  performance: { eyebrow: "RENDIMIENTO", title: "Datos para decidir." },
+  settings: { eyebrow: "CONFIGURACIÓN", title: "Identidad y accesos." },
+};
+
 const zones = ["CABA", "Zona Norte", "Zona Oeste", "Zona Sur", "Costa Atlántica", "Interior"];
 
 function toAdmin(property: Property): AdminProperty { return { ...property, gallery: property.gallery ?? [], status: "published", updatedAt: new Date().toISOString() }; }
@@ -40,14 +50,25 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
 
   async function loadData() {
     setLoading(true); setFatalError("");
-    try {
-      const [propertyResponse, leadResponse] = await Promise.all([fetch("/api/admin/properties", { cache: "no-store" }), fetch("/api/admin/leads", { cache: "no-store" })]);
-      if (!propertyResponse.ok || !leadResponse.ok) throw new Error("No se pudo conectar con la administración.");
-      const propertyData = await propertyResponse.json() as { properties: AdminProperty[] };
-      const leadData = await leadResponse.json() as { leads: AdminLead[] };
-      setItems(propertyData.properties); setLeads(leadData.leads);
-    } catch (reason) { setFatalError(reason instanceof Error ? reason.message : "No se pudo cargar la información."); }
-    finally { setLoading(false); }
+    const [propertyResult, leadResult] = await Promise.allSettled([
+      fetch("/api/admin/properties", { cache: "no-store", credentials: "same-origin" }),
+      fetch("/api/admin/leads", { cache: "no-store", credentials: "same-origin" }),
+    ]);
+    const issues: string[] = [];
+    if (propertyResult.status === "fulfilled" && propertyResult.value.ok) {
+      const propertyData = await propertyResult.value.json() as { properties: AdminProperty[] };
+      setItems(propertyData.properties);
+    } else {
+      issues.push("propiedades");
+    }
+    if (leadResult.status === "fulfilled" && leadResult.value.ok) {
+      const leadData = await leadResult.value.json() as { leads: AdminLead[] };
+      setLeads(leadData.leads);
+    } else {
+      issues.push("consultas");
+    }
+    if (issues.length) setFatalError(`No pudimos sincronizar ${issues.join(" y ")}.`);
+    setLoading(false);
   }
 
   useEffect(() => { const timer = window.setTimeout(() => { void loadData(); }, 0); return () => window.clearTimeout(timer); }, []);
@@ -136,26 +157,28 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
       <nav className="admin-navigation">
         <button className={view === "overview" ? "active" : ""} type="button" onClick={() => navigate("overview")}><LayoutDashboard/><span>Panel general</span></button>
         <button className={view === "properties" ? "active" : ""} type="button" onClick={() => navigate("properties")}><Building2/><span>Propiedades</span><b>{items.length}</b></button>
+        <button className={view === "developments" ? "active" : ""} type="button" onClick={() => navigate("developments")}><Sparkles/><span>Emprendimientos</span><b>{developments.length}</b></button>
         <button className={view === "leads" ? "active" : ""} type="button" onClick={() => navigate("leads")}><MessageSquareText/><span>Consultas</span>{newLeads > 0 && <i>{newLeads}</i>}</button>
+        <button className={view === "performance" ? "active" : ""} type="button" onClick={() => navigate("performance")}><BarChart3/><span>Rendimiento</span></button>
       </nav>
-      <nav className="admin-navigation secondary"><p>ACCESOS</p><Link className="admin-nav-link" href="/" target="_blank"><Eye/><span>Ver sitio público</span><ArrowUpRight/></Link></nav>
+      <nav className="admin-navigation secondary"><p>CONFIGURACIÓN</p><button className={view === "settings" ? "active" : ""} type="button" onClick={() => navigate("settings")}><Settings/><span>Ajustes del sitio</span></button><Link className="admin-nav-link" href="/" target="_blank"><Eye/><span>Ver sitio público</span><ArrowUpRight/></Link></nav>
       <div className="admin-user"><span>{userName.slice(0,2).toUpperCase()}</span><div><b>{userName}</b><small>Administración</small></div><a href={signOutPath} aria-label="Cerrar sesión"><ArrowUpRight/></a></div>
     </aside>
 
     <section className="admin-canvas">
-      <header className="admin-header"><button className="admin-mobile-menu" type="button" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú"><Menu/></button><div><p>{view === "leads" ? "CONSULTAS" : view === "properties" ? "INVENTARIO" : "PANEL GENERAL"}</p><h1>{view === "leads" ? "Personas interesadas." : view === "properties" ? "Toda la cartera." : `Buenos días, ${userName.split(" ")[0]}.`}</h1></div><div className="admin-header-actions"><button className="admin-refresh" type="button" onClick={() => void loadData()} aria-label="Actualizar"><RefreshCw/></button>{view !== "leads" && <button type="button" onClick={openCreate}><Plus/> Nueva propiedad</button>}</div></header>
+      <header className="admin-header"><button className="admin-mobile-menu" type="button" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú"><Menu/></button><div><p>{viewCopy[view].eyebrow}</p><h1>{view === "overview" ? `Buenos días, ${userName.split(" ")[0]}.` : viewCopy[view].title}</h1></div><div className="admin-header-actions"><button className="admin-refresh" type="button" onClick={() => void loadData()} aria-label="Actualizar"><RefreshCw/></button>{(view === "overview" || view === "properties") && <button type="button" onClick={openCreate}><Plus/> Nueva propiedad</button>}</div></header>
 
       {notice && <button className="admin-toast" type="button" onClick={() => setNotice("")}><Check/><span>{notice}</span><X/></button>}
       {fatalError && <div className="admin-fatal"><BarChart3/><div><b>No pudimos cargar la administración</b><span>{fatalError} Volvé a iniciar sesión o intentá nuevamente.</span></div><button type="button" onClick={() => void loadData()}><RefreshCw/> Reintentar</button></div>}
 
-      {view !== "leads" && <section className="admin-overview">
+      {view === "overview" && <section className="admin-overview">
         <article className="admin-kpi primary"><div><span>PUBLICACIONES ACTIVAS</span><strong>{published}</strong><p><BarChart3/> Catálogo público</p></div><div className="admin-mini-chart">{[42,61,48,75,67,91,84].map((height,index)=><i key={index} style={{height:`${height}%`}}/>)}</div></article>
         <article className="admin-kpi"><span>BORRADORES</span><strong>{drafts}</strong><p><FileText/> Pendientes de publicación</p></article>
         <article className="admin-kpi"><span>DESTACADAS</span><strong>{featured}</strong><p><Star/> Prioridad en el catálogo</p></article>
         <article className="admin-kpi value"><span>VALOR DE CARTERA</span><strong>USD {(portfolioValue/1000000).toFixed(1)}M</strong><p><CircleDollarSign/> Publicadas en venta</p></article>
       </section>}
 
-      {view !== "leads" && <section className="admin-content-card">
+      {(view === "overview" || view === "properties") && <section className="admin-content-card">
         <div className="admin-list-head"><div><p>{view === "overview" ? "ACTIVIDAD RECIENTE" : "INVENTARIO"}</p><h2>{view === "overview" ? "Últimas propiedades" : "Propiedades"}</h2><span>{view === "overview" ? "Los movimientos más recientes de la cartera." : "Creá, editá y publicá todo desde un único lugar."}</span></div><button type="button" onClick={openCreate}><Plus/> Agregar propiedad</button></div>
         {view === "properties" && <div className="admin-toolbar"><label><Search/><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Buscar por nombre, zona o tipo"/></label><div>{(["all","published","draft","reserved"] as const).map(option=><button type="button" key={option} className={filter===option?"active":""} onClick={()=>setFilter(option)}>{option==="all"?"Todas":statusLabel[option]}<b>{option==="all"?items.length:items.filter(item=>item.status===option).length}</b></button>)}</div></div>}
         <div className="admin-list-labels"><span>PROPIEDAD</span><span>OPERACIÓN</span><span>PRECIO</span><span>ESTADO</span><span>ACTUALIZACIÓN</span><span/></div>
@@ -168,6 +191,11 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
 
       {view === "overview" && <section className="admin-lead-summary"><div><p>CONSULTAS</p><h2>{newLeads ? `${newLeads} nuevas oportunidades.` : "Consultas al día."}</h2><span>Todos los mensajes enviados desde las fichas llegan acá.</span></div><button type="button" onClick={()=>navigate("leads")}>Ver consultas <ArrowUpRight/></button></section>}
 
+      {view === "developments" && <section className="admin-content-card admin-module-card"><div className="admin-list-head"><div><p>PORTFOLIO DE PROYECTOS</p><h2>Emprendimientos</h2><span>Accedé a cada ficha y controlá el estado comercial de la selección.</span></div><Link href="/emprendimientos" target="_blank">Ver catálogo <ArrowUpRight/></Link></div><div className="admin-development-grid">{developments.map(item=><article key={item.id}><img src={item.image} alt=""/><div><span>{item.status}</span><h3>{item.title}</h3><p><MapPin/>{item.location}</p><dl><div><dt>UNIDADES</dt><dd>{item.units}</dd></div><div><dt>ENTREGA</dt><dd>{item.delivery}</dd></div></dl><Link href={`/emprendimientos/${item.slug}`} target="_blank">Abrir ficha <ArrowUpRight/></Link></div></article>)}</div></section>}
+
+      {view === "performance" && <section className="admin-performance"><article className="admin-insight-hero"><div><p>LECTURA COMERCIAL</p><h2>{published} publicaciones activas.</h2><span>La cartera concentra {featured} propiedades destacadas y {newLeads} consultas nuevas.</span></div><TrendingUp/></article><div className="admin-insight-grid"><article><Activity/><span>CONVERSIÓN</span><strong>{leads.length ? Math.round((leads.filter(item=>item.status!=="new").length/leads.length)*100) : 0}%</strong><p>Consultas con seguimiento iniciado.</p></article><article><Users/><span>CONSULTAS</span><strong>{leads.length}</strong><p>Contactos registrados en el panel.</p></article><article><Building2/><span>INVENTARIO</span><strong>{items.length}</strong><p>Propiedades entre publicadas y borradores.</p></article><article><CircleDollarSign/><span>CARTERA</span><strong>USD {(portfolioValue/1000000).toFixed(1)}M</strong><p>Valor publicado de propiedades en venta.</p></article></div></section>}
+
+      {view === "settings" && <section className="admin-content-card admin-settings-card"><div className="admin-list-head"><div><p>CONFIGURACIÓN GENERAL</p><h2>Ajustes del sitio</h2><span>Información esencial de la cuenta y accesos del proyecto.</span></div><ShieldCheck/></div><div className="admin-settings-grid"><article><Globe2/><div><span>SITIO PÚBLICO</span><b>inmobiliaria.ideamos.ar</b><p>Dominio principal conectado y publicado.</p></div><Link href="/" target="_blank"><ArrowUpRight/></Link></article><article><Mail/><div><span>CUENTA ADMINISTRADORA</span><b>r.lavega@ideamos.com.ar</b><p>Único correo autorizado para gestionar la cartera.</p></div><ShieldCheck/></article><article><MessageSquareText/><div><span>CANAL DE CONSULTAS</span><b>Panel conectado</b><p>Los formularios de las fichas ingresan en Consultas.</p></div><Check/></article><article><Sparkles/><div><span>IDENTIDAD</span><b>Ideamos Propiedades</b><p>El color destacado continúa administrándose desde el selector del sitio.</p></div><Link href="/" target="_blank"><Eye/></Link></article></div></section>}
       {view === "leads" && <section className="admin-content-card admin-leads-card"><div className="admin-list-head"><div><p>BANDEJA DE ENTRADA</p><h2>Consultas recibidas</h2><span>Registrá el seguimiento sin perder conversaciones.</span></div><button type="button" onClick={()=>void loadData()}><RefreshCw/> Actualizar</button></div><div className="admin-lead-list">{leads.map(lead=>{const property=items.find(item=>item.id===lead.propertyId); return <article key={lead.id}><header><div className="lead-avatar">{lead.name.slice(0,2).toUpperCase()}</div><div><b>{lead.name}</b><span>{dateLabel(lead.createdAt)}</span></div><select value={lead.status} onChange={event=>void updateLead(lead.id,event.target.value as AdminLead["status"])} aria-label="Estado de consulta"><option value="new">Nueva</option><option value="contacted">Contactada</option><option value="closed">Cerrada</option></select></header><p>{lead.message}</p>{property&&<Link href={`/propiedades/${property.slug}`} target="_blank"><Building2/> {property.title}</Link>}<footer><div>{lead.email&&<a href={`mailto:${lead.email}`}><Mail/> {lead.email}</a>}{lead.phone&&<a href={`tel:${lead.phone}`}><Phone/> {lead.phone}</a>}</div><span className={`lead-state ${lead.status}`}>{leadLabel[lead.status]}</span><button type="button" onClick={()=>void removeLead(lead.id)} aria-label="Eliminar consulta"><Trash2/></button></footer></article>})}{!loading&&!leads.length&&<div className="admin-empty"><MessageSquareText/><h3>Todavía no hay consultas.</h3><p>Los mensajes enviados desde las propiedades aparecerán automáticamente.</p></div>}</div></section>}
     </section>
 

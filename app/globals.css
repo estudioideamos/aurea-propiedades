@@ -993,3 +993,6 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
   .related-heading>div{min-width:0;width:100%}
   .related-heading h2{font-size:36px;overflow-wrap:anywhere}
 }
+
+/* Mobile testimonial seal alignment */
+@media(max-width:600px){.testimonial-carousel:before{top:-53px}.testimonial-carousel .testimonial-orbit{margin-top:-158px}}
