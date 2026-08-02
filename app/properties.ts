@@ -3,7 +3,8 @@ export type Property = {
   operation: "Venta" | "Alquiler"; type: "Casa" | "Departamento" | "PH" | "Terreno";
   currency: "USD" | "ARS"; price: number; rooms: number; bedrooms: number;
   bathrooms: number; area: number; image: string; featured?: boolean;
-  description: string; amenities: string[];
+  description: string; amenities: string[]; gallery?: string[];
+  coveredArea?: number; garages?: number; age?: string; condition?: string; orientation?: string;
 };
 
 export const properties: Property[] = [

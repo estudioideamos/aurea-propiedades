@@ -29,8 +29,10 @@ function parseAmenities(value: unknown) {
 
 function serialize(row: typeof propertyRecords.$inferSelect) {
   let amenities: string[] = [];
+  let gallery: string[] = [];
   try { amenities = JSON.parse(row.amenities) as string[]; } catch { amenities = []; }
-  return { ...row, amenities };
+  try { gallery = JSON.parse(row.gallery) as string[]; } catch { gallery = []; }
+  return { ...row, amenities, gallery };
 }
 
 async function ensureSeeded() {
@@ -50,7 +52,13 @@ async function ensureSeeded() {
     bedrooms: property.bedrooms,
     bathrooms: property.bathrooms,
     area: property.area,
+    coveredArea: property.coveredArea ?? (property.type === "Terreno" ? 0 : Math.round(property.area * .84)),
+    garages: property.garages ?? (property.type === "Departamento" ? 1 : 2),
+    age: property.age ?? "A estrenar",
+    condition: property.condition ?? "Excelente",
+    orientation: property.orientation ?? "Norte",
     image: property.image,
+    gallery: JSON.stringify(property.gallery ?? []),
     description: property.description,
     amenities: JSON.stringify(property.amenities),
     status: "published",
@@ -62,11 +70,13 @@ function validate(payload: PropertyPayload) {
   const title = String(payload.title ?? "").trim();
   const location = String(payload.location ?? "").trim();
   const image = String(payload.image ?? "").trim();
-  if (!title || !location || !image) return "Completá nombre, ubicación e imagen.";
+  const status = String(payload.status ?? "published");
+  if (!title || !location) return "Completá nombre y ubicación.";
+  if (status !== "draft" && !image) return "Agregá una imagen principal antes de publicar.";
   if (!validOperations.has(String(payload.operation))) return "La operación no es válida.";
   if (!validTypes.has(String(payload.type))) return "El tipo de propiedad no es válido.";
   if (!validCurrencies.has(String(payload.currency))) return "La moneda no es válida.";
-  if (!validStatuses.has(String(payload.status ?? "published"))) return "El estado no es válido.";
+  if (!validStatuses.has(status)) return "El estado no es válido.";
   if (Number(payload.price) < 0 || Number(payload.area) <= 0) return "Revisá precio y superficie.";
   return null;
 }
@@ -86,7 +96,13 @@ function valuesFrom(payload: PropertyPayload) {
     bedrooms: Math.max(0, Number(payload.bedrooms || 0)),
     bathrooms: Math.max(0, Number(payload.bathrooms || 0)),
     area: Math.max(1, Number(payload.area || 1)),
-    image: String(payload.image).trim(),
+    coveredArea: Math.max(0, Number(payload.coveredArea || 0)),
+    garages: Math.max(0, Number(payload.garages || 0)),
+    age: String(payload.age || "").trim(),
+    condition: String(payload.condition || "Excelente").trim(),
+    orientation: String(payload.orientation || "Norte").trim(),
+    image: String(payload.image || "").trim(),
+    gallery: JSON.stringify(Array.isArray(payload.gallery) ? payload.gallery.map(String).filter(Boolean) : []),
     description: String(payload.description || "").trim(),
     amenities: JSON.stringify(parseAmenities(payload.amenities)),
     status: String(payload.status || "published"),

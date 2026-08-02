@@ -4,7 +4,7 @@ import "./globals.css";
 
 const manrope = Manrope({ variable: "--font-sans", subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 const dmSans = DM_Sans({ variable: "--font-body", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://aurea-propiedades-demo.r-lavega.chatgpt.site").replace(/\/$/, "");
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://inmobiliaria.ideamos.ar").replace(/\/$/, "");
 const socialImage = `${siteUrl}/og.png`;
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
