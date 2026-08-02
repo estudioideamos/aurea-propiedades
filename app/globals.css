@@ -875,3 +875,27 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @media(prefers-reduced-motion:reduce){
   .mobile-nav-drawer,.mobile-nav-drawer> *{transition:none!important}
 }
+/* Mobile search dropdown: compact trigger with an overlaid option sheet */
+@media(max-width:600px){
+  .floating-search{overflow:visible}
+  .floating-search .search-dropdown{min-height:72px;align-self:start;overflow:visible}
+  .floating-search .search-dropdown-trigger{height:auto;min-height:72px;padding:15px 18px}
+  .floating-search .search-dropdown-menu{position:absolute;left:0;right:0;top:calc(100% + 7px);margin:0;max-height:min(310px,55vh);overflow-y:auto;overscroll-behavior:contain;z-index:120;border-radius:20px;padding:8px}
+  .floating-search .search-dropdown-menu button{min-height:49px;padding:13px 15px;font-size:14px}
+  .vian-site:has(.floating-search .search-dropdown.open) .theme-switcher,
+  .vian-site:has(.floating-search .search-dropdown.open) .floating-actions{opacity:0;pointer-events:none}
+}
+
+/* Raisa-inspired mobile footer composition */
+@media(max-width:680px){
+  .rich-footer{padding-inline:18px}
+  .rich-footer-cta{min-height:0;padding:58px 0 48px;grid-template-columns:1fr;grid-template-rows:auto auto;gap:34px;align-items:start}
+  .rich-footer-cta:before{width:360px;height:360px;right:-205px;top:auto;bottom:-205px;background:radial-gradient(circle,rgba(var(--accent-rgb),.14),transparent 67%)}
+  .rich-footer-eyebrow{font-size:8px;line-height:1.45}
+  .rich-footer-cta h2{max-width:100%;margin-top:23px;font-size:clamp(43px,12.3vw,54px);line-height:.92;letter-spacing:-.062em}
+  .rich-footer-cta h2 span,.rich-footer-cta h2 em{white-space:normal}
+  .rich-footer-cta .footer-orbit-link{width:150px;height:150px;justify-self:end;margin-right:2px}
+  .rich-footer-cta .footer-orbit-link:before{inset:34px}
+  .rich-footer-cta .footer-orbit-link .footer-orbit-text{inset:8px;top:8px}
+  .rich-footer-cta .footer-orbit-link .footer-orbit-core{width:64px;height:64px}
+}
