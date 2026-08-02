@@ -41,5 +41,6 @@ export async function getLiveProperty(slug: string): Promise<{ property: Propert
 );
 
 await rm(new URL("../app/api/admin", import.meta.url), { recursive: true, force: true });
+await rm(new URL("../app/api/health", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/leads", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/media", import.meta.url), { recursive: true, force: true });
