@@ -9,11 +9,12 @@ const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 IDEAMOS \u00b7 ";
 const marqueeItems = ["PROPIEDADES SELECCIONADAS", "TASACIONES PROFESIONALES", "ADMINISTRACIÓN DE ALQUILERES", "ACOMPAÑAMIENTO PERSONAL", "BUENOS AIRES"];
 const colorThemes = [
   { id: "lime", name: "Lima Ideamos", color: "#cfff3d", rgb: "207,255,61" },
-  { id: "electric-lime", name: "Lima eléctrico", color: "#E8F115", rgb: "232,241,21" },
-  { id: "red", name: "Rojo coral", color: "#ff5a4e", rgb: "255,90,78" },
-  { id: "blue", name: "Azul cielo", color: "#65b6ff", rgb: "101,182,255" },
-  { id: "amber", name: "Ámbar", color: "#ffbf3f", rgb: "255,191,63" },
-  { id: "lavender", name: "Lavanda", color: "#b9a7ff", rgb: "185,167,255" },
+  { id: "deep-blue", name: "Azul profundo", color: "#295C9B", rgb: "41,92,155" },
+  { id: "sky-blue", name: "Azul cielo", color: "#3D7FC3", rgb: "61,127,195" },
+  { id: "petrol-green", name: "Verde petróleo", color: "#2F6B57", rgb: "47,107,87" },
+  { id: "muted-coral", name: "Rojo coral apagado", color: "#B85C60", rgb: "184,92,96" },
+  { id: "copper-orange", name: "Naranja cobre", color: "#C8792C", rgb: "200,121,44" },
+  { id: "elegant-violet", name: "Violeta elegante", color: "#7A68B3", rgb: "122,104,179" },
 ];
 
 function SiteMarquee() {
@@ -35,7 +36,12 @@ function ThemeSwitcher() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("aurea-accent");
-    if (saved && colorThemes.some(theme => theme.id === saved)) applyTheme(saved);
+    const theme = colorThemes.find(item => item.id === saved);
+    if (!theme) return;
+    document.documentElement.style.setProperty("--accent", theme.color);
+    document.documentElement.style.setProperty("--accent-rgb", theme.rgb);
+    const timer = window.setTimeout(() => setSelected(theme.id), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return <aside className={"theme-switcher " + (open ? "open" : "")} aria-label="Personalizar color destacado">
@@ -54,7 +60,11 @@ export function Brand() {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
-  return <><SiteMarquee/><header className="site-header"><Brand/><nav className="desktop-nav"><Link href="/propiedades">Propiedades</Link><Link href="/emprendimientos">Emprendimientos</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={"menu-toggle " + (open ? "is-open" : "")} onClick={() => setOpen(!open)} aria-label={open ? "Cerrar men&uacute;" : "Abrir men&uacute;"} aria-expanded={open}><i/><i/></button><div className={"mobile-nav-drawer " + (open ? "open" : "")}><p className="mobile-menu-kicker">MEN&Uacute; / IDEAMOS PROPIEDADES</p><details open><summary><span>01</span><b>Inmuebles</b><ChevronDown aria-hidden="true"/></summary><div><Link href="/propiedades" onClick={closeMenu}>Propiedades</Link><Link href="/emprendimientos" onClick={closeMenu}>Emprendimientos</Link><Link href="/propiedades?operacion=venta" onClick={closeMenu}>Comprar</Link><Link href="/propiedades?operacion=alquiler" onClick={closeMenu}>Alquilar</Link></div></details><details><summary><span>02</span><b>Servicios</b><ChevronDown aria-hidden="true"/></summary><div><Link href="/servicios" onClick={closeMenu}>Todos los servicios</Link><Link href="/tasacion" onClick={closeMenu}>Tasaciones</Link><Link href="/contacto" onClick={closeMenu}>Administraci&oacute;n</Link></div></details><Link className="mobile-menu-row" href="/nosotros" onClick={closeMenu}><span>03</span><b>Nosotros</b><ArrowUpRight aria-hidden="true"/></Link><Link className="mobile-menu-row" href="/contacto" onClick={closeMenu}><span>04</span><b>Contacto</b><ArrowUpRight aria-hidden="true"/></Link><Link className="mobile-menu-cta" href="/tasacion" onClick={closeMenu}>Tas&aacute; tu propiedad <ArrowUpRight aria-hidden="true"/></Link></div></header><ThemeSwitcher/></>;
+  useEffect(() => {
+    document.body.classList.toggle("mobile-menu-lock", open);
+    return () => document.body.classList.remove("mobile-menu-lock");
+  }, [open]);
+  return <><SiteMarquee/><header className={"site-header " + (open ? "menu-open" : "")}><Brand/><nav className="desktop-nav"><Link href="/propiedades">Propiedades</Link><Link href="/emprendimientos">Emprendimientos</Link><Link href="/nosotros">Nosotros</Link><Link href="/servicios">Servicios</Link><Link href="/contacto">Contacto</Link></nav><Link className="header-action" href="/tasacion">Tas&aacute; tu propiedad <ArrowUpRight className="mini-arrow" aria-hidden="true" strokeWidth={1.8}/></Link><button className={"menu-toggle " + (open ? "is-open" : "")} onClick={() => setOpen(!open)} aria-label={open ? "Cerrar men&uacute;" : "Abrir men&uacute;"} aria-expanded={open}><i/><i/></button><div className={"mobile-nav-drawer " + (open ? "open" : "")}><p className="mobile-menu-kicker">MEN&Uacute; / IDEAMOS PROPIEDADES</p><details open><summary><span>01</span><b>Inmuebles</b><ChevronDown aria-hidden="true"/></summary><div><Link href="/propiedades" onClick={closeMenu}>Propiedades</Link><Link href="/emprendimientos" onClick={closeMenu}>Emprendimientos</Link><Link href="/propiedades?operacion=venta" onClick={closeMenu}>Comprar</Link><Link href="/propiedades?operacion=alquiler" onClick={closeMenu}>Alquilar</Link></div></details><details><summary><span>02</span><b>Servicios</b><ChevronDown aria-hidden="true"/></summary><div><Link href="/servicios" onClick={closeMenu}>Todos los servicios</Link><Link href="/tasacion" onClick={closeMenu}>Tasaciones</Link><Link href="/contacto" onClick={closeMenu}>Administraci&oacute;n</Link></div></details><Link className="mobile-menu-row" href="/nosotros" onClick={closeMenu}><span>03</span><b>Nosotros</b><ArrowUpRight aria-hidden="true"/></Link><Link className="mobile-menu-row" href="/contacto" onClick={closeMenu}><span>04</span><b>Contacto</b><ArrowUpRight aria-hidden="true"/></Link><Link className="mobile-menu-cta" href="/tasacion" onClick={closeMenu}>Tas&aacute; tu propiedad <ArrowUpRight aria-hidden="true"/></Link></div></header><ThemeSwitcher/></>;
 }
 
 export function SiteFooter() {

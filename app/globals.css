@@ -822,3 +822,56 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 }
 @keyframes footerToggleIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.footer-nav-toggle.open>div{animation:none}.footer-nav-toggle>button svg{transition:none}}
+/* Fullscreen premium mobile menu, centered mobile copyright and development details */
+.mobile-menu-lock{overflow:hidden}
+@media(max-width:800px){
+  .site-header{position:relative;z-index:350}
+  .site-header.menu-open .brand,.site-header.menu-open .menu-toggle{position:relative;z-index:352}
+  .site-header.menu-open .ideamos-word{color:#fff}
+  .site-header.menu-open .menu-toggle{border-color:var(--accent);background:var(--accent)}
+  .site-header.menu-open .menu-toggle i{border-color:var(--ink)}
+  .mobile-nav-drawer{display:block;position:fixed;z-index:340;inset:0;width:100%;height:100dvh;max-height:none;padding:132px 22px 78px;background:var(--ink);color:#fff;border-radius:0;box-shadow:none;overflow-y:auto;overscroll-behavior:contain;opacity:1;visibility:hidden;pointer-events:none;transform:none;clip-path:circle(0 at calc(100% - 42px) 84px);transition:clip-path .72s cubic-bezier(.77,0,.18,1),visibility .72s}
+  .mobile-nav-drawer:before{content:"";position:fixed;z-index:-1;right:-150px;bottom:-165px;width:390px;height:390px;border:1px solid rgba(var(--accent-rgb),.2);border-radius:50%;box-shadow:0 0 0 58px rgba(var(--accent-rgb),.035),0 0 0 116px rgba(var(--accent-rgb),.025);pointer-events:none}
+  .mobile-nav-drawer.open{visibility:visible;pointer-events:auto;clip-path:circle(150vmax at calc(100% - 42px) 84px)}
+  .mobile-menu-kicker{margin:0 0 26px;padding:0;color:var(--accent);font-size:8px;font-weight:900;letter-spacing:.2em}
+  .mobile-nav-drawer details,.mobile-menu-row{border-bottom:1px solid #353a32}
+  .mobile-nav-drawer summary,.mobile-menu-row{min-height:76px;grid-template-columns:42px 1fr 30px;color:#fff}
+  .mobile-nav-drawer summary>span,.mobile-menu-row>span{font-size:9px;color:#737a70}
+  .mobile-nav-drawer summary>b,.mobile-menu-row>b{font-size:clamp(27px,8vw,38px);font-weight:650;letter-spacing:-.055em;line-height:1}
+  .mobile-nav-drawer summary>svg,.mobile-menu-row>svg{width:21px;height:21px;color:var(--accent)}
+  .mobile-nav-drawer details>div{grid-template-columns:1fr 1fr;gap:7px;padding:5px 0 18px 42px}
+  .mobile-nav-drawer details>div a{min-height:48px;padding:12px 14px;border:1px solid #30342d;border-radius:14px;background:#20231e;color:#d7dbd3;font-size:12px;font-weight:700;transition:background-color .25s ease,color .25s ease,transform .25s ease}
+  .mobile-nav-drawer details>div a:first-child{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+  .mobile-menu-cta{min-height:62px;margin-top:24px;padding:0 21px;background:var(--accent);color:var(--ink);font-size:13px;box-shadow:0 16px 45px rgba(var(--accent-rgb),.15)}
+  .mobile-menu-cta svg{color:var(--ink)}
+  .mobile-nav-drawer> *{opacity:0;transform:translateY(18px);transition:opacity .38s ease,transform .48s cubic-bezier(.2,.75,.2,1)}
+  .mobile-nav-drawer.open> *{opacity:1;transform:none}
+  .mobile-nav-drawer.open> :nth-child(1){transition-delay:.2s}
+  .mobile-nav-drawer.open> :nth-child(2){transition-delay:.26s}
+  .mobile-nav-drawer.open> :nth-child(3){transition-delay:.32s}
+  .mobile-nav-drawer.open> :nth-child(4){transition-delay:.38s}
+  .mobile-nav-drawer.open> :nth-child(5){transition-delay:.44s}
+  .mobile-nav-drawer.open> :nth-child(6){transition-delay:.5s}
+}
+@media(max-width:430px){
+  .mobile-nav-drawer{inset:0;padding:120px 16px 68px}
+  .mobile-nav-drawer details>div{grid-template-columns:1fr;padding-left:42px}
+}
+@media(max-width:680px){
+  .rich-footer-bottom{justify-items:center;text-align:center}
+  .rich-footer-bottom>span{width:100%;text-align:center!important}
+  .footer-seal{justify-items:center}
+  .footer-credit{justify-self:center;justify-content:center;text-align:center}
+}
+.development-detail .detail-intro h1{max-width:980px}
+.development-overview article b{font-size:15px;line-height:1.22}
+.development-detail .premium-contact>a img{width:18px;height:18px}
+.development-experience a svg{width:17px;height:17px}
+@media(max-width:680px){
+  .development-overview article b{font-size:14px}
+  .development-detail .detail-intro h1{font-size:54px}
+  .development-detail .detail-block h2{font-size:39px}
+}
+@media(prefers-reduced-motion:reduce){
+  .mobile-nav-drawer,.mobile-nav-drawer> *{transition:none!important}
+}
