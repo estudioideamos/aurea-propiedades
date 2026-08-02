@@ -1,8 +1,8 @@
 import { HomeExperience } from "./home-experience";
-import { properties } from "./properties";
+import { getLiveProperties } from "./live-properties";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
-  return <HomeExperience properties={properties} />;
+export default async function Home() {
+  return <HomeExperience properties={await getLiveProperties()} />;
 }

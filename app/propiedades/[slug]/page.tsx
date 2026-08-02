@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Bath, BedDouble, CalendarDays, CarFront, Check, Home, MapPin, Maximize2, Play, Ruler, Sparkles } from "lucide-react";
-import { formatPrice, properties } from "../../properties";
+import { formatPrice, properties as staticProperties } from "../../properties";
+import { getLiveProperty } from "../../live-properties";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { siteAsset } from "../../site-path";
 import { PropertyActions } from "./property-actions";
@@ -16,15 +17,15 @@ const galleryPool=[
 ];
 
 export function generateStaticParams() {
-  return properties.map(({ slug }) => ({ slug }));
+  return staticProperties.map(({ slug }) => ({ slug }));
 }
 
-export const dynamic = "force-static";
-export const dynamicParams = false;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const property=properties.find(item=>item.slug===slug);
+  const { property, all: properties } = await getLiveProperty(slug);
   if(!property) notFound();
   const gallery=[property.image,...Array.from({length:4},(_,i)=>galleryPool[(property.id+i)%galleryPool.length])];
   const covered=property.type==="Terreno"?0:Math.round(property.area*.84);
