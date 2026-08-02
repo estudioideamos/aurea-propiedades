@@ -791,3 +791,34 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 @media(hover:hover){.contact-vian-details article:hover{background:#20231e}}
 @media(max-width:1000px){.contact-vian-details{grid-template-columns:1fr 1fr}.contact-vian-details article:nth-child(2){border-right:0}.contact-vian-details article:nth-child(-n+2){border-bottom:1px solid #353a32}}
 @media(max-width:680px){.contact-vian-details{grid-template-columns:1fr;padding:8px;border-radius:25px}.contact-vian-details article{min-height:130px;border-right:0;border-bottom:1px solid #353a32!important}.contact-vian-details article:last-child{border-bottom:0!important}}
+/* Compact contact data band */
+.contact-vian{padding-bottom:72px}
+.contact-vian-details{padding:8px;border-radius:27px}
+.contact-vian-details article{min-height:118px;padding:18px 20px;grid-template-columns:40px 1fr;gap:10px 13px}
+.contact-vian-details article>small{top:13px;right:15px}
+.contact-vian-details article>svg{width:38px;height:38px;padding:10px}
+.contact-vian-details article>b,.contact-vian-details article>a{font-size:12px;line-height:1.45}
+@media(max-width:680px){.contact-vian{padding-bottom:58px}.contact-vian-details article{min-height:105px;padding:16px 17px}}
+/* Responsive footer navigation toggles */
+.footer-nav-toggle>button{display:none}
+.footer-nav-toggle>div{display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+@media(max-width:680px){
+  .rich-footer-main{grid-template-columns:1fr;gap:0}
+  .rich-footer-brand{grid-column:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:46px}
+  .rich-footer-brand>p{margin-left:auto;margin-right:auto}
+  .footer-social{justify-content:center}
+  .footer-nav-toggle{grid-column:1;width:100%;display:block;border-top:1px solid #383c34}
+  .footer-nav-toggle+ .footer-nav-toggle{border-bottom:1px solid #383c34}
+  .footer-nav-toggle>button{width:100%;min-height:67px;padding:0 4px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:850;letter-spacing:.16em;text-align:left}
+  .footer-nav-toggle>button svg{width:18px;height:18px;color:var(--accent);transition:transform .3s ease}
+  .footer-nav-toggle.open>button svg{transform:rotate(180deg)}
+  .footer-nav-toggle>div{display:none;padding:2px 4px 24px;align-items:center;gap:15px}
+  .footer-nav-toggle.open>div{display:flex;animation:footerToggleIn .28s ease both}
+  .footer-nav-toggle>div a{font-size:13px;text-align:center}
+  .rich-footer-contact{grid-column:1;padding:48px 0 10px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .rich-footer-contact h3{max-width:320px}
+  .rich-footer-contact .footer-whatsapp{width:min(100%,360px)}
+  .rich-footer-contact>p:not(.contact-kicker),.rich-footer-contact>a.footer-email{justify-content:center}
+}
+@keyframes footerToggleIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.footer-nav-toggle.open>div{animation:none}.footer-nav-toggle>button svg{transition:none}}
