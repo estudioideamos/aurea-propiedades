@@ -899,3 +899,17 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
   .rich-footer-cta .footer-orbit-link .footer-orbit-text{inset:8px;top:8px}
   .rich-footer-cta .footer-orbit-link .footer-orbit-core{width:64px;height:64px}
 }
+/* Mobile width containment and responsive About metrics */
+@media(max-width:680px){
+  html,body{max-width:100%;overflow-x:clip}
+  main,.vian-site{min-width:0;max-width:100%}
+  .data-band{width:100%;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));overflow:hidden}
+  .data-band>div{min-width:0;grid-template-columns:minmax(0,auto) minmax(0,1fr);column-gap:10px;padding:20px 16px}
+  .data-band strong{min-width:0;max-width:100%;font-size:clamp(44px,13vw,54px);letter-spacing:-.065em}
+  .data-band p{min-width:0;max-width:100%;font-size:7px;line-height:1.38;letter-spacing:.075em;overflow-wrap:anywhere}
+}
+@media(max-width:420px){
+  .data-band>div{min-height:158px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-content:end;align-items:start;row-gap:11px;padding:21px 15px 17px}
+  .data-band strong{font-size:50px}
+  .data-band p{width:100%}
+}
