@@ -28,4 +28,16 @@ await replaceIn("../app/propiedades/[slug]/page.tsx", [
   ['export const dynamicParams = true;', 'export const dynamicParams = false;'],
 ]);
 
+await writeFile(
+  new URL("../app/live-properties.ts", import.meta.url),
+  `import { properties, type Property } from "./properties";
+
+export async function getLiveProperties() { return properties; }
+export async function getLiveProperty(slug: string): Promise<{ property: Property | null; all: Property[] }> {
+  return { property: properties.find((item) => item.slug === slug) ?? null, all: properties };
+}
+`,
+  "utf8",
+);
+
 await rm(new URL("../app/api/admin", import.meta.url), { recursive: true, force: true });
