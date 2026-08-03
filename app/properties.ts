@@ -1,7 +1,7 @@
 export type Property = {
   id: number; slug: string; title: string; location: string; zone: string;
   operation: "Venta" | "Alquiler"; type: "Casa" | "Departamento" | "PH" | "Terreno";
-  currency: "USD" | "ARS"; price: number; rooms: number; bedrooms: number;
+  currency: "USD" | "ARS"; price: number; pricePrefix?: string; priceSuffix?: string; rooms: number; bedrooms: number;
   bathrooms: number; area: number; image: string; featured?: boolean;
   description: string; amenities: string[]; gallery?: string[];
   coveredArea?: number; garages?: number; age?: string; condition?: string; orientation?: string;
@@ -26,4 +26,4 @@ export const properties: Property[] = [
   { id:16, slug:"casa-pradera-pilar", title:"Casa Pradera", location:"Pilar, Buenos Aires", zone:"Zona Norte", operation:"Venta", type:"Casa", currency:"USD", price:398000, rooms:6, bedrooms:4, bathrooms:3, area:325, image:"https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=1600&q=85", description:"Una casa luminosa con galeria profunda y vistas al verde.", amenities:["Barrio cerrado","Piscina","Galeria","Cochera doble"] }
 ];
 
-export const formatPrice = (property: Property) => `${property.currency} ${new Intl.NumberFormat("es-AR").format(property.price)}`;
+export const formatPrice = (property: Property) => [property.pricePrefix?.trim(), `${property.currency} ${new Intl.NumberFormat("es-AR").format(property.price)}`, property.priceSuffix?.trim()].filter(Boolean).join(" ");

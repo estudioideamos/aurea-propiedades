@@ -28,6 +28,15 @@ await replaceIn("../app/propiedades/[slug]/page.tsx", [
   ['export const dynamicParams = true;', 'export const dynamicParams = false;'],
 ]);
 
+await replaceIn("../app/emprendimientos/page.tsx", [[
+  'export const dynamic = "force-dynamic";',
+  'export const dynamic = "force-static";',
+]]);
+await replaceIn("../app/emprendimientos/[slug]/page.tsx", [
+  ['export const dynamic = "force-dynamic";', 'export const dynamic = "force-static";'],
+  ['export const dynamicParams = true;', 'export const dynamicParams = false;'],
+]);
+
 await writeFile(
   new URL("../app/live-properties.ts", import.meta.url),
   `import { properties, type Property } from "./properties";
@@ -40,7 +49,17 @@ export async function getLiveProperty(slug: string): Promise<{ property: Propert
   "utf8",
 );
 
+await writeFile(
+  new URL("../app/live-developments.ts", import.meta.url),
+  `import { developments, type Development } from "./developments";
+export async function getLiveDevelopments(): Promise<Development[]> { return developments; }
+export async function getLiveDevelopment(slug: string) { return { development: developments.find((item) => item.slug === slug) ?? null, all: developments }; }
+`,
+  "utf8",
+);
+
 await rm(new URL("../app/api/admin", import.meta.url), { recursive: true, force: true });
+await rm(new URL("../app/api/settings", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/health", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/leads", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/media", import.meta.url), { recursive: true, force: true });

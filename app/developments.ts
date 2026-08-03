@@ -8,6 +8,12 @@ export type Development = {
   delivery: string;
   units: string;
   price: string;
+  currency?: "USD" | "ARS";
+  priceValue?: number;
+  pricePrefix?: string;
+  priceSuffix?: string;
+  publicationStatus?: "published" | "draft";
+  updatedAt?: string;
   image: string;
   gallery: string[];
   floors: string;
@@ -48,10 +54,24 @@ const rawDevelopments = [
   { id:8, slug:"puerto-madero-dock", title:"Dock 08", location:"Puerto Madero, CABA", neighborhood:"Puerto Madero", status:"ÚLTIMAS UNIDADES", delivery:"2026", units:"2 a 5 ambientes", price:"Desde USD 360.000", image:"https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1800&q=88", floors:"22 pisos", apartments:"96 unidades", garages:"120 cocheras", developer:"Dock Capital", architect:"Estudio Sur", lead:"Residencias premium con vistas abiertas, servicios de hotelería y una selección de materiales de alta gama.", context:"En uno de los sectores más exclusivos de la ciudad, junto al río, parques, gastronomía y el distrito financiero." },
 ];
 
-export const developments: Development[] = rawDevelopments.map((item, index) => ({
+export const developments: Development[] = rawDevelopments.map((item, index) => {
+  const match = item.price.match(/^(.*?)\s*(USD|ARS)\s+([\d.]+)(?:\s+(.*))?$/);
+  return {
   ...item,
+  currency: (match?.[2] ?? "USD") as "USD" | "ARS",
+  priceValue: Number((match?.[3] ?? "0").replace(/\./g, "")),
+  pricePrefix: match?.[1]?.trim() ?? "",
+  priceSuffix: match?.[4]?.trim() ?? "",
+  publicationStatus: "published" as const,
   gallery: makeGallery(item.image, index),
   description: [item.lead, item.context],
   amenities: sharedAmenities,
   specifications: sharedSpecifications,
-}));
+};
+});
+
+export const formatDevelopmentPrice = (development: Development) => {
+  if (typeof development.priceValue !== "number") return development.price;
+  const base = `${development.currency ?? "USD"} ${new Intl.NumberFormat("es-AR").format(development.priceValue)}`;
+  return [development.pricePrefix?.trim(), base, development.priceSuffix?.trim()].filter(Boolean).join(" ");
+};
