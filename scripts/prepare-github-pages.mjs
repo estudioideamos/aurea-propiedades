@@ -11,10 +11,6 @@ async function replaceIn(relativePath, replacements) {
   await writeFile(file, source, "utf8");
 }
 
-await replaceIn("../app/admin/page.tsx", [[
-  /export const dynamic\s*=\s*"force-dynamic";/,
-  'export const dynamic = "force-static";',
-]]);
 await replaceIn("../app/page.tsx", [[
   'export const dynamic = "force-dynamic";',
   'export const dynamic = "force-static";',
@@ -58,6 +54,11 @@ export async function getLiveDevelopment(slug: string) { return { development: d
   "utf8",
 );
 
+await rm(new URL("../app/admin", import.meta.url), { recursive: true, force: true });
+await rm(new URL("../app/api/auth", import.meta.url), { recursive: true, force: true });
+await rm(new URL("../app/admin-auth.ts", import.meta.url), { force: true });
+await rm(new URL("../app/chatgpt-auth.ts", import.meta.url), { force: true });
+await rm(new URL("../db", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/admin", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/settings", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/health", import.meta.url), { recursive: true, force: true });
