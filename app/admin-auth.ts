@@ -6,7 +6,8 @@ import { getChatGPTUser } from "./chatgpt-auth";
 const DEFAULT_ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 const SESSION_COOKIE = "ideamos_admin_session";
 const SESSION_DAYS = 7;
-const ITERATIONS = 210000;
+// Limite admitido por Cloudflare Workers para una derivacion PBKDF2.
+const ITERATIONS = 100000;
 const ATTEMPT_LIMIT = 5;
 
 type AdminRow = { id:number; email:string; passwordHash:string; passwordSalt:string; passwordIterations:number; displayName:string };
