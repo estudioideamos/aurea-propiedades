@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Bath, BedDouble, CalendarDays, CarFront, Check, Home, MapPin, Maximize2, Play, Ruler, Sparkles } from "lucide-react";
@@ -18,6 +19,25 @@ const galleryPool=[
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=86"
 ];
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://inmobiliaria.ideamos.ar").replace(/\/$/, "");
+const absoluteImage = (image: string) => /^https?:\/\//i.test(image) ? image : `${siteUrl}${image.startsWith("/") ? image : `/${image}`}`;
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const { property } = await getLiveProperty(slug);
+  if (!property) return { title: "Propiedad no encontrada | Ideamos Propiedades" };
+  const title = `${property.title} | Ideamos Propiedades`;
+  const description = `${property.type} en ${property.location}. ${formatPrice(property)}. Conoc\u00e9 sus caracter\u00edsticas, galer\u00eda y ubicaci\u00f3n.`;
+  const url = `${siteUrl}/propiedades/${property.slug}`;
+  const image = absoluteImage(property.image);
+  return {
+    title, description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, siteName: "Ideamos Propiedades", locale: "es_AR", type: "website", images: [{ url: image, alt: property.title }] },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
+  };
+}
+
 export function generateStaticParams() {
   return staticProperties.map(({ slug }) => ({ slug }));
 }
@@ -33,7 +53,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const gallery = managedGallery.length ? [property.image, ...managedGallery] : [property.image, ...Array.from({length:4},(_,i)=>galleryPool[(property.id+i)%galleryPool.length])];
   const covered = property.coveredArea ?? (property.type === "Terreno" ? 0 : Math.round(property.area * .84));
   const garage = property.garages ?? (property.type === "Departamento" ? 1 : property.type === "Casa" ? 2 : 1);
-  const age = property.age || (property.id % 3 === 0 ? "A estrenar" : `${4 + property.id} años`);
+  const age = property.age || (property.id % 3 === 0 ? "A estrenar" : `${4 + property.id} a\u00f1os`);
   const related=properties.filter(item=>item.id!==property.id&&(item.zone===property.zone||item.type===property.type)).slice(0,3);
   const mapUrl=`https://www.google.com/maps?q=${encodeURIComponent(property.location)}&output=embed`;
   return <main className="detail-page premium-detail"><SiteHeader/>

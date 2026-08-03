@@ -12,8 +12,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(`${siteUrl}/`),
   title: "Ideamos Propiedades | Espacios excepcionales",
   description: "Propiedades seleccionadas para comprar, alquilar e invertir en Buenos Aires.",
+  alternates: { canonical: `${siteUrl}/` },
   icons: { icon: `${basePath}/favicon.svg`, shortcut: `${basePath}/favicon.svg`, apple: `${basePath}/favicon.svg` },
-  openGraph: { title: "Ideamos Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [{ url: socialImage, width: 1200, height: 630 }], locale: "es_AR", type: "website" },
+  openGraph: { title: "Ideamos Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", siteName: "Ideamos Propiedades", images: [{ url: socialImage, width: 1200, height: 630, alt: "Ideamos Propiedades - Propiedades con criterio" }], locale: "es_AR", type: "website" },
   twitter: { card: "summary_large_image", title: "Ideamos Propiedades", description: "Espacios excepcionales, guiados por tu forma de vivir.", images: [socialImage] },
 };
 
