@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getChatGPTUser } from "../../../chatgpt-auth";
 import { properties as seedProperties, type Property } from "../../../properties";
 import { getDb } from "../../../../db";
@@ -39,9 +39,7 @@ function serialize(row: typeof propertyRecords.$inferSelect) {
 async function ensureSeeded() {
   await ensureDatabaseSchema();
   const db = getDb();
-  const [summary] = await db.select({ total: sql<number>`count(*)` }).from(propertyRecords);
-  if (Number(summary?.total ?? 0) > 0) return;
-  await db.insert(propertyRecords).values(seedProperties.map(property => ({
+  const seedValues = seedProperties.map(property => ({
     slug: property.slug,
     title: property.title,
     location: property.location,
@@ -65,7 +63,17 @@ async function ensureSeeded() {
     amenities: JSON.stringify(property.amenities),
     status: "published",
     featured: Boolean(property.featured),
-  })));
+  }));
+
+  // D1 limita la cantidad de variables por sentencia. Insertar todo el
+  // catalogo en un unico query supera ese limite; una propiedad por sentencia
+  // mantiene la carga inicial segura y permite completar catalogos parciales.
+  for (const property of seedValues) {
+    await db
+      .insert(propertyRecords)
+      .values(property)
+      .onConflictDoNothing({ target: propertyRecords.slug });
+  }
 }
 
 function validate(payload: PropertyPayload) {
