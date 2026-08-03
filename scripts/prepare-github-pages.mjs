@@ -5,14 +5,14 @@ async function replaceIn(relativePath, replacements) {
   let source = await readFile(file, "utf8");
   for (const [from, to] of replacements) {
     const next = source.replace(from, to);
-    if (next === source) throw new Error(`No se encontró la configuración esperada en ${relativePath}.`);
+    if (next === source) throw new Error(`No se encontr\u00f3 la configuraci\u00f3n esperada en ${relativePath}.`);
     source = next;
   }
   await writeFile(file, source, "utf8");
 }
 
 await replaceIn("../app/admin/page.tsx", [[
-  'export const dynamic = "force-dynamic";',
+  /export const dynamic\s*=\s*"force-dynamic";/,
   'export const dynamic = "force-static";',
 ]]);
 await replaceIn("../app/page.tsx", [[
