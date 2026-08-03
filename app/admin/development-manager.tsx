@@ -6,7 +6,7 @@ import { formatDevelopmentPrice, type Development } from "../developments";
 
 type PublicationStatus = "published" | "draft";
 type AdminDevelopment = Development & { publicationStatus: PublicationStatus };
-type Draft = AdminDevelopment & { id?: number; descriptionText:string; amenitiesText:string; specificationsText:string };
+type Draft = Omit<AdminDevelopment, "id"> & { id?: number; descriptionText:string; amenitiesText:string; specificationsText:string };
 const PUBLIC_SITE="https://inmobiliaria.ideamos.ar";
 const empty:Draft={id:undefined,slug:"",title:"",location:"",neighborhood:"",status:"EN POZO",delivery:"A confirmar",units:"1 a 3 ambientes",currency:"USD",priceValue:0,pricePrefix:"Desde",priceSuffix:"",price:"",image:"",gallery:[],floors:"",apartments:"",garages:"",developer:"",architect:"",description:[],amenities:[],specifications:[],descriptionText:"",amenitiesText:"",specificationsText:"",publicationStatus:"draft"};
 function slugify(value:string){return value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");}
