@@ -110,6 +110,33 @@ async function upgradeSchema() {
   await database.prepare(`INSERT OR IGNORE INTO site_settings
     (id, agency_name, contact_name, contact_email, phone, address, schedule)
     VALUES (1, 'Ideamos Propiedades', 'Equipo Ideamos', 'hola@ideamos.ar', '+54 11 5555 0190', 'Av. del Libertador 2424, Buenos Aires', 'Lun. a vie. / 9 a 18 h')`).run();
+
+  await database.prepare(`CREATE TABLE IF NOT EXISTS admin_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    password_iterations INTEGER NOT NULL,
+    display_name TEXT DEFAULT 'Equipo Ideamos' NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`).run();
+  await database.prepare(`CREATE TABLE IF NOT EXISTS admin_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER NOT NULL,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES admin_users(id) ON DELETE CASCADE
+  )`).run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS admin_sessions_token_index ON admin_sessions(token_hash)").run();
+  await database.prepare(`CREATE TABLE IF NOT EXISTS admin_login_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    email TEXT NOT NULL,
+    ip TEXT NOT NULL,
+    attempted_at TEXT NOT NULL
+  )`).run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS admin_login_attempts_lookup ON admin_login_attempts(email,ip,attempted_at)").run();
 }
 
 export function ensureDatabaseSchema() {

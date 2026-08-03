@@ -1,8 +1,7 @@
 import { env } from "cloudflare:workers";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { isAdminRequestAuthorized } from "../../../admin-auth";
 import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
-const ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 
 type SettingsPayload = {
   agencyName?: string;
@@ -13,9 +12,8 @@ type SettingsPayload = {
   schedule?: string;
 };
 
-async function authorized() {
-  const user = await getChatGPTUser();
-  return Boolean(user && user.email.toLowerCase() === ADMIN_EMAIL);
+async function authorized(request: Request) {
+  return isAdminRequestAuthorized(request);
 }
 
 async function readSettings() {
@@ -31,8 +29,8 @@ async function readSettings() {
     FROM site_settings WHERE id = 1`).first();
 }
 
-export async function GET() {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+export async function GET(request: Request) {
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     return Response.json({ settings: await readSettings() });
   } catch (error) {
@@ -41,7 +39,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     const payload = await request.json() as SettingsPayload;
     const values = {

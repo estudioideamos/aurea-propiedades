@@ -1,19 +1,17 @@
 import { desc, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { isAdminRequestAuthorized } from "../../../admin-auth";
 import { getDb } from "../../../../db";
 import { leads } from "../../../../db/schema";
 import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
-const ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 const validStatuses = new Set(["new", "contacted", "closed"]);
 
-async function authorized() {
-  const user = await getChatGPTUser();
-  return Boolean(user && user.email.toLowerCase() === ADMIN_EMAIL);
+async function authorized(request: Request) {
+  return isAdminRequestAuthorized(request);
 }
 
-export async function GET() {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+export async function GET(request: Request) {
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     await ensureDatabaseSchema();
     const rows = await getDb().select().from(leads).orderBy(desc(leads.createdAt), desc(leads.id));
@@ -24,7 +22,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   await ensureDatabaseSchema();
   const payload = await request.json() as { id?: number; status?: string };
   if (!payload.id || !validStatuses.has(String(payload.status))) return Response.json({ error: "Datos inválidos." }, { status: 400 });
@@ -34,7 +32,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   await ensureDatabaseSchema();
   const id = Number(new URL(request.url).searchParams.get("id"));
   if (!id) return Response.json({ error: "Falta el identificador." }, { status: 400 });

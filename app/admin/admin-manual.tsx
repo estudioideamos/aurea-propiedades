@@ -57,14 +57,15 @@ const guides = [
     number: "05",
     title: "Ajustes y acceso",
     icon: Settings,
-    summary: "Actualizá los datos públicos y administrá tu sesión.",
+    summary: "Actualiz\u00e1 los datos p\u00fablicos y administr\u00e1 tu cuenta.",
     steps: [
-      "En Ajustes del sitio podés modificar nombre, correo, teléfono, dirección y horarios.",
-      "Guardá los cambios y revisá el sitio público desde el acceso del menú lateral.",
-      "El correo administrador es independiente del correo comercial que se muestra a clientes.",
-      "Para salir de forma segura, usá Cerrar sesión al pie del menú.",
+      "En Ajustes del sitio pod\u00e9s modificar los datos comerciales visibles en la web.",
+      "En Cuenta administradora pod\u00e9s cambiar el nombre, el email de ingreso o la contrase\u00f1a.",
+      "Los cambios sensibles requieren confirmar la contrase\u00f1a actual.",
+      "Si la olvidaste, us\u00e1 Recuperar contrase\u00f1a desde la pantalla de ingreso y verific\u00e1 tu identidad.",
+      "Para salir de forma segura, us\u00e1 Cerrar sesi\u00f3n al pie del men\u00fa.",
     ],
-    tip: "Antes de cerrar la sesión, confirmá que cualquier editor abierto haya sido guardado.",
+    tip: "El correo administrador es independiente del correo comercial que ven los clientes.",
   },
 ];
 

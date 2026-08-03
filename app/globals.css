@@ -456,7 +456,7 @@ svg.mini-arrow{display:block;width:18px;height:18px;position:static;transform:no
 /* Ideamos responsive vector brand */
 .ideamos-brand{display:inline-flex;align-items:center;gap:11px;letter-spacing:0}
 .ideamos-symbol{width:48px;height:37px;display:block;fill:var(--accent);flex:0 0 auto;transition:fill .35s ease,transform .35s ease}
-.ideamos-word{font-size:31px;font-weight:900;line-height:1;letter-spacing:-.075em;text-transform:lowercase;color:var(--ink)}
+.ideamos-word{font-size:31px;font-weight:700;line-height:1;letter-spacing:-.06em;text-transform:lowercase;color:var(--ink)}
 .rich-footer .ideamos-word,.admin-topbar .ideamos-word{color:#fff}
 .rich-footer .ideamos-symbol{width:53px;height:40px}
 @media(hover:hover){.ideamos-brand:hover .ideamos-symbol{transform:translateY(-2px) rotate(-2deg)}}

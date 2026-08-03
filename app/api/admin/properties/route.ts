@@ -1,11 +1,10 @@
 import { desc, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { isAdminRequestAuthorized } from "../../../admin-auth";
 import { properties as seedProperties, type Property } from "../../../properties";
 import { getDb } from "../../../../db";
 import { propertyRecords } from "../../../../db/schema";
 import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
-const ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 const validOperations = new Set(["Venta", "Alquiler"]);
 const validTypes = new Set(["Casa", "Departamento", "PH", "Terreno"]);
 const validCurrencies = new Set(["USD", "ARS"]);
@@ -13,9 +12,8 @@ const validStatuses = new Set(["published", "draft", "reserved"]);
 
 type PropertyPayload = Partial<Property> & { status?: string };
 
-async function isAuthorized() {
-  const user = await getChatGPTUser();
-  return Boolean(user && user.email.toLowerCase() === ADMIN_EMAIL);
+async function isAuthorized(request: Request) {
+  return isAdminRequestAuthorized(request);
 }
 
 function slugify(value: string) {
@@ -125,8 +123,8 @@ function valuesFrom(payload: PropertyPayload) {
   };
 }
 
-export async function GET() {
-  if (!(await isAuthorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+export async function GET(request: Request) {
+  if (!(await isAuthorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     await ensureSeeded();
     const rows = await getDb().select().from(propertyRecords).orderBy(desc(propertyRecords.updatedAt), desc(propertyRecords.id));
@@ -137,7 +135,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAuthorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await isAuthorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     const payload = await request.json() as PropertyPayload;
     const error = validate(payload);
@@ -152,7 +150,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  if (!(await isAuthorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await isAuthorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     const payload = await request.json() as PropertyPayload & { id?: number };
     if (!payload.id) return Response.json({ error: "Falta el identificador." }, { status: 400 });
@@ -167,7 +165,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await isAuthorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await isAuthorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   await ensureDatabaseSchema();
   const id = Number(new URL(request.url).searchParams.get("id"));
   if (!id) return Response.json({ error: "Falta el identificador." }, { status: 400 });

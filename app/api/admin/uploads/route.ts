@@ -1,7 +1,6 @@
 import { env } from "cloudflare:workers";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { isAdminRequestAuthorized } from "../../../admin-auth";
 
-const ADMIN_EMAIL = "r.lavega@ideamos.com.ar";
 const MAX_FILES = 12;
 const MAX_BYTES = 10 * 1024 * 1024;
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
@@ -11,9 +10,8 @@ type MediaBucket = {
   delete(key: string): Promise<void>;
 };
 
-async function authorized() {
-  const user = await getChatGPTUser();
-  return Boolean(user && user.email.toLowerCase() === ADMIN_EMAIL);
+async function authorized(request: Request) {
+  return isAdminRequestAuthorized(request);
 }
 
 function bucket() {
@@ -27,7 +25,7 @@ function safeName(name: string) {
 }
 
 export async function POST(request: Request) {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   try {
     const data = await request.formData();
     const files = data.getAll("files").filter((entry): entry is File => entry instanceof File);
@@ -54,7 +52,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await authorized())) return Response.json({ error: "No autorizado" }, { status: 401 });
+  if (!(await authorized(request))) return Response.json({ error: "No autorizado" }, { status: 401 });
   const url = new URL(request.url).searchParams.get("url") ?? "";
   const marker = "/api/media/";
   if (!url.includes(marker)) return Response.json({ error: "La imagen no pertenece al almacenamiento administrado." }, { status: 400 });

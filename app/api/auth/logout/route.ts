@@ -1,0 +1,2 @@
+import { clearSessionCookie, deleteSession } from "../../../admin-auth";
+export async function POST(request:Request){await deleteSession(request);const response=Response.json({ok:true});response.headers.set("Set-Cookie",clearSessionCookie(new URL(request.url).protocol==="https:"));return response;}
