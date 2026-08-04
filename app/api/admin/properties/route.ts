@@ -6,7 +6,6 @@ import { propertyRecords } from "../../../../db/schema";
 import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
 const validOperations = new Set(["Venta", "Alquiler", "Alquiler temporario"]);
-const validTypes = new Set(["Casa", "Departamento", "PH", "Terreno"]);
 const validCurrencies = new Set(["USD", "ARS"]);
 const validStatuses = new Set(["published", "draft", "reserved"]);
 
@@ -84,7 +83,7 @@ function validate(payload: PropertyPayload) {
   if (!title || !location) return "Completá nombre y ubicación.";
   if (status !== "draft" && !image) return "Agregá una imagen principal antes de publicar.";
   if (!validOperations.has(String(payload.operation))) return "La operación no es válida.";
-  if (!validTypes.has(String(payload.type))) return "El tipo de propiedad no es válido.";
+  if (!String(payload.type ?? "").trim()) return "Complet\u00e1 el tipo de propiedad.";
   if (!validCurrencies.has(String(payload.currency))) return "La moneda no es válida.";
   if (!validStatuses.has(status)) return "El estado no es válido.";
   if (Number(payload.price) < 0 || Number(payload.area) <= 0) return "Revisá precio y superficie.";

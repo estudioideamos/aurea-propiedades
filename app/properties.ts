@@ -1,6 +1,6 @@
 export type Property = {
   id: number; slug: string; title: string; location: string; zone: string;
-  operation: "Venta" | "Alquiler" | "Alquiler temporario"; type: "Casa" | "Departamento" | "PH" | "Terreno";
+  operation: "Venta" | "Alquiler" | "Alquiler temporario"; type: string;
   currency: "USD" | "ARS"; price: number; pricePrefix?: string; priceSuffix?: string; rooms: number; bedrooms: number;
   bathrooms: number; area: number; image: string; featured?: boolean;
   description: string; amenities: string[]; gallery?: string[];

@@ -18,7 +18,7 @@ const guides: Guide[] = [
     summary: "Cre\u00e1, edit\u00e1 y public\u00e1 cada inmueble desde un flujo guiado.",
     steps: [
       "Ingres\u00e1 a Propiedades y eleg\u00ed Nueva propiedad.",
-      "Complet\u00e1 nombre, operaci\u00f3n, ubicaci\u00f3n y precio. Los textos antes y despu\u00e9s del precio son opcionales.",
+      "Complet\u00e1 nombre, operaci\u00f3n, ubicaci\u00f3n y precio. En tipo y zona pod\u00e9s elegir una opci\u00f3n existente o escribir una nueva; las opciones importadas desde Tokko se agregan autom\u00e1ticamente.",
       "Avanz\u00e1 a Ficha t\u00e9cnica para cargar ambientes, superficies, estado y comodidades.",
       "Sub\u00ed las im\u00e1genes, defin\u00ed la portada y guard\u00e1 como borrador o public\u00e1.",
     ],
@@ -86,7 +86,7 @@ const guides: Guide[] = [
       "En Tokko, complet\u00e1 la ficha, el precio, los detalles y la multimedia de la propiedad.",
       "Cambi\u00e1 el estado de la propiedad a Disponible. Tu usuario de Tokko necesita permiso para hacerlo.",
       "En la parte superior de la ficha activ\u00e1 el interruptor general Publicar y eleg\u00ed mostrarla en la web. Si Publicar est\u00e1 apagado, no aparecer\u00e1 en el sitio.",
-      "En Ideamos, abr\u00ed Ajustes del sitio > Tokko Broker. Peg\u00e1 la API key obtenida en Mi Empresa > Permisos. El ID de empresa es opcional y se conserva como referencia de la cuenta.",
+      "En Ideamos, abr\u00ed Ajustes del sitio > Tokko Broker. Peg\u00e1 la API key obtenida en Mi Empresa > Permisos. El ID de empresa es opcional y se conserva como referencia de la cuenta. Cada sincronizaci\u00f3n incorpora tambi\u00e9n las tipolog\u00edas y localidades reales para usarlas en los filtros.",
       "Prob\u00e1 la conexi\u00f3n, guard\u00e1 la integraci\u00f3n como Activa y presion\u00e1 Sincronizar ahora. Esta acci\u00f3n hace una revisi\u00f3n completa de todas las propiedades habilitadas para web.",
       "Solo ingresan las propiedades disponibles y habilitadas para web. Si Tokko devuelve 0, revis\u00e1 el interruptor Publicar de cada ficha y volv\u00e9 a probar la conexi\u00f3n.",
       "Para pausar, dej\u00e1 la integraci\u00f3n Inactiva y guard\u00e1. Para eliminar la API key, los IDs y el historial, us\u00e1 Desvincular Tokko y confirm\u00e1. Las propiedades existentes se conservan.",

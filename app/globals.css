@@ -1043,3 +1043,16 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
 .admin-property-list .admin-empty .admin-empty-create svg{width:18px;height:18px;flex:0 0 18px}
 .operation-tabs button{line-height:1.15}
 @media(min-width:1101px){.floating-search{grid-template-columns:1.2fr 1.15fr 1fr 1fr auto}.floating-search .operation-tabs button{padding:10px 8px;font-size:10px;letter-spacing:0}}
+
+
+/* Dynamic Tokko taxonomy and fixed editorial gallery */
+.search-dropdown-menu{max-height:min(420px,60vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media(min-width:1101px){
+.detail-gallery-grid{grid-template-areas:"main second third" "main fourth fifth"}
+.detail-gallery-grid>.gallery-main{grid-area:main}
+.detail-gallery-grid>.gallery-1{grid-area:second}
+.detail-gallery-grid>.gallery-2{grid-area:third}
+.detail-gallery-grid>.gallery-3{grid-area:fourth}
+.detail-gallery-grid>.gallery-4{grid-area:fifth}
+.detail-gallery-grid>button{min-width:0;min-height:0}
+}

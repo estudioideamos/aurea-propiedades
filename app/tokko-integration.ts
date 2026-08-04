@@ -165,12 +165,8 @@ function slugify(value: string) {
 function cleanDescription(value: unknown) {
   return text(value).replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;/gi, " ").replace(/&amp;/gi, "&").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
 }
-function tokkoType(value: unknown): "Casa" | "Departamento" | "PH" | "Terreno" {
-  const source = text(value).toLowerCase();
-  if (source.includes("casa") || source.includes("quinta") || source.includes("chalet")) return "Casa";
-  if (source.includes("ph")) return "PH";
-  if (source.includes("terreno") || source.includes("lote") || source.includes("campo")) return "Terreno";
-  return "Departamento";
+function tokkoType(value: unknown) {
+  return text(value).trim() || "Otro";
 }
 function tokkoZone(value: string) {
   const source = value.toLowerCase();
@@ -222,7 +218,7 @@ function mapTokkoProperty(raw: unknown) {
     slug: `tokko-${text(source.id) || slugify(externalId)}-${slugify(title).slice(0, 48)}`,
     title,
     location,
-    zone: tokkoZone(fullLocation || location),
+    zone: locality || tokkoZone(fullLocation || location),
     operation: operationText.includes("tempor") || operationText.includes("short")
       ? "Alquiler temporario"
       : operationText.includes("alquiler") || operationText.includes("rent")
