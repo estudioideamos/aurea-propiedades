@@ -5,6 +5,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PropertyCard } from "../home-experience";
 import type { Property } from "../properties";
 
+const operationOptions = ["Todas", "Venta", "Alquiler", "Alquiler temporario"];
+const roomOptions = ["Todos", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes"];
+
 type CatalogDropdownProps = {
   label: string;
   value: string;
@@ -48,8 +51,37 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
   const [type, setType] = useState("Todos");
   const [zone, setZone] = useState("Todas");
   const [rooms, setRooms] = useState("Todos");
+  const [filtersReady, setFiltersReady] = useState(false);
   const typeOptions = useMemo(() => ["Todos", ...Array.from(new Set(properties.map(property => property.type.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))], [properties]);
   const zoneOptions = useMemo(() => ["Todas", ...Array.from(new Set(properties.map(property => property.zone.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))], [properties]);
+
+  useEffect(() => {
+    if (filtersReady) return;
+    const params = new URLSearchParams(window.location.search);
+    const selectMatching = (key: string, options: string[], setValue: (value: string) => void) => {
+      const requested = params.get(key);
+      if (!requested) return;
+      const match = options.find(option => option.localeCompare(requested, "es", { sensitivity: "base" }) === 0);
+      if (match) setValue(match);
+    };
+    selectMatching("operacion", operationOptions, setOperation);
+    selectMatching("tipo", typeOptions, setType);
+    selectMatching("zona", zoneOptions, setZone);
+    selectMatching("ambientes", roomOptions, setRooms);
+    setFiltersReady(true);
+  }, [filtersReady, typeOptions, zoneOptions]);
+
+  useEffect(() => {
+    if (!filtersReady) return;
+    const params = new URLSearchParams();
+    if (operation !== "Todas") params.set("operacion", operation);
+    if (type !== "Todos") params.set("tipo", type);
+    if (zone !== "Todas") params.set("zona", zone);
+    if (rooms !== "Todos") params.set("ambientes", rooms);
+    const query = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+  }, [filtersReady, operation, type, zone, rooms]);
+
   const visible = useMemo(() => properties.filter(p => {
     const roomMatch = rooms === "Todos" || (rooms === "5+ ambientes" ? p.rooms >= 5 : p.rooms === Number.parseInt(rooms, 10));
     return (operation === "Todas" || p.operation === operation) && (type === "Todos" || p.type === type) && (zone === "Todas" || p.zone === zone) && roomMatch;
@@ -57,10 +89,10 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
 
   return <>
     <div className="catalog-controls">
-      <CatalogDropdown label="OPERACI&Oacute;N" value={operation} options={["Todas", "Venta", "Alquiler", "Alquiler temporario"]} onChange={setOperation}/>
+      <CatalogDropdown label="OPERACI&Oacute;N" value={operation} options={operationOptions} onChange={setOperation}/>
       <CatalogDropdown label="TIPO DE PROPIEDAD" value={type} options={typeOptions} onChange={setType}/>
       <CatalogDropdown label="ZONA" value={zone} options={zoneOptions} onChange={setZone}/>
-      <CatalogDropdown label="AMBIENTES" value={rooms} options={["Todos", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes"]} onChange={setRooms}/>
+      <CatalogDropdown label="AMBIENTES" value={rooms} options={roomOptions} onChange={setRooms}/>
       <div className="catalog-result"><strong>{String(visible.length).padStart(2, "0")}</strong><span>RESULTADOS</span></div>
     </div>
     <div className="property-grid" key={`${operation}-${type}-${zone}-${rooms}`}>{visible.map((p, i) => <PropertyCard key={p.id} property={p} index={i}/>)}</div>

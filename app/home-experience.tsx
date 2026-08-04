@@ -102,7 +102,13 @@ export function HomeExperience({ properties }: { properties: Property[] }) {
   const typeOptions=useMemo(()=>["Todos",...Array.from(new Set(properties.map(property=>property.type.trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b,"es"))],[properties]);
   const zoneOptions=useMemo(()=>["Todas",...Array.from(new Set(properties.map(property=>property.zone.trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b,"es"))],[properties]);
   const visible=useMemo(()=>properties.filter(p=>p.operation===operation&&(type==="Todos"||p.type===type)&&(zone==="Todas"||p.zone===zone)),[operation,type,zone,properties]);
-  const runSearch=()=>document.getElementById("propiedades")?.scrollIntoView({behavior:"smooth"});
+  const runSearch=()=>{
+    const params=new URLSearchParams();
+    params.set("operacion",operation);
+    if(type!=="Todos") params.set("tipo",type);
+    if(zone!=="Todas") params.set("zona",zone);
+    window.location.assign(`${siteAsset("/propiedades")}?${params.toString()}#resultados`);
+  };
   return <main className="vian-site"><SiteHeader/>
     <section className="vian-hero"><img className="vian-hero-image" src={siteAsset("/assets/aurea-hero-vian.png")} alt="Residencia contemporanea seleccionada por Ideamos"/><div className="vian-hero-shade"/><div className="vian-hero-copy"><p className="pill-label"><i/> INMOBILIARIA BOUTIQUE</p><h1>Espacios excepcionales,<br/><span>guiados por tu forma de vivir.</span></h1><p className="hero-description">Seleccionamos propiedades con arquitectura, ubicaci&oacute;n y valor real. Te acompa&ntilde;amos con criterio desde la primera visita hasta la firma.</p><Link href="/propiedades" className="lime-button">Explorar propiedades <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><aside className="core-card"><div><p>VALOR CENTRAL</p><h2>Elegir bien cambia todo.</h2><Link href="/nosotros">Nuestro enfoque <ArrowUpRight className="mini-arrow" aria-hidden="true"/></Link></div><img src={siteAsset("/assets/aurea-core-values.png")} alt="Maqueta arquitectonica Ideamos"/></aside><div className="hero-scroll"><span>SCROLL</span><i/></div></section>
     <section className="floating-search"><div className="search-title"><CustomIcon kind="compass"/><div><span>BUSQUEDA PERSONALIZADA</span><b>Encontr&aacute; tu lugar</b></div></div><div className="operation-tabs">{(["Venta","Alquiler","Alquiler temporario"] as const).map(item=><button className={operation===item?"active":""} onClick={()=>setOperation(item)} key={item}>{item}</button>)}</div><SearchDropdown label="TIPO DE PROPIEDAD" value={type} options={typeOptions} onChange={setType}/><SearchDropdown label="ZONA" value={zone} options={zoneOptions} onChange={setZone}/><button className="search-button" onClick={runSearch}>Buscar <ArrowUpRight className="mini-arrow" aria-hidden="true"/></button></section>
