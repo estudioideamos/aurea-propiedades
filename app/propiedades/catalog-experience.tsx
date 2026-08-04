@@ -51,7 +51,7 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
 
   return <>
     <div className="catalog-controls">
-      <CatalogDropdown label="OPERACI&Oacute;N" value={operation} options={["Todas", "Venta", "Alquiler"]} onChange={setOperation}/>
+      <CatalogDropdown label="OPERACI&Oacute;N" value={operation} options={["Todas", "Venta", "Alquiler", "Alquiler temporario"]} onChange={setOperation}/>
       <CatalogDropdown label="TIPO DE PROPIEDAD" value={type} options={["Todos", "Casa", "Departamento", "PH", "Terreno"]} onChange={setType}/>
       <CatalogDropdown label="ZONA" value={zone} options={["Todas", "CABA", "Zona Norte"]} onChange={setZone}/>
       <div className="catalog-result"><strong>{String(visible.length).padStart(2, "0")}</strong><span>RESULTADOS</span></div>

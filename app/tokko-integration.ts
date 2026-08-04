@@ -190,7 +190,7 @@ function amenitiesFrom(source: Record<string, unknown>) {
 }
 function photosFrom(source: Record<string, unknown>) {
   if (!Array.isArray(source.photos)) return [];
-  return source.photos.map(item => { const photo = record(item); return text(photo.original) || text(photo.image); }).filter(Boolean).slice(0, 30);
+  return source.photos.map(item => { const photo = record(item); return text(photo.original) || text(photo.image); }).filter(Boolean).slice(0, 60);
 }
 function mapTokkoProperty(raw: unknown) {
   const source = record(raw);
@@ -209,7 +209,8 @@ function mapTokkoProperty(raw: unknown) {
   const operationData = operations.find(item => Array.isArray(item.prices) && item.prices.length) ?? operations[0] ?? {};
   const prices = Array.isArray(operationData.prices) ? operationData.prices.map(record) : [];
   const priceData = prices.find(item => !item.is_promotional) ?? prices[0] ?? {};
-  const operationText = text(operationData.operation_type).toLowerCase();
+  const operationType = record(operationData.operation_type);
+  const operationText = [text(operationType.name), text(operationType.code), text(operationData.operation_type)].join(" ").toLowerCase();
   const currencyText = text(priceData.currency).toUpperCase();
   const currency = currencyText === "ARS" ? "ARS" : "USD";
   const age = Math.round(number(source.age));
@@ -222,7 +223,11 @@ function mapTokkoProperty(raw: unknown) {
     title,
     location,
     zone: tokkoZone(fullLocation || location),
-    operation: operationText.includes("alquiler") || operationText.includes("rent") ? "Alquiler" : "Venta",
+    operation: operationText.includes("tempor") || operationText.includes("short")
+      ? "Alquiler temporario"
+      : operationText.includes("alquiler") || operationText.includes("rent")
+        ? "Alquiler"
+        : "Venta",
     type: tokkoType(text(typeData.name) || source.operation_category),
     currency,
     price: Math.max(0, Math.round(number(priceData.price))),
@@ -232,7 +237,7 @@ function mapTokkoProperty(raw: unknown) {
     area: Math.max(1, totalArea),
     coveredArea: Math.max(0, coveredArea),
     garages: Math.max(0, Math.round(number(source.parking_lot_amount))),
-    age: age === 0 ? "A estrenar" : `${age} anos`,
+    age: age === 0 ? "A estrenar" : `${age} a\u00f1os`,
     condition: text(condition.name) || text(source.property_condition) || "A consultar",
     orientation: text(orientation.name) || text(source.orientation) || "A consultar",
     image: photos[0] ?? "",

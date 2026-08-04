@@ -53,7 +53,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const gallery = managedGallery.length ? [property.image, ...managedGallery] : [property.image, ...Array.from({length:4},(_,i)=>galleryPool[(property.id+i)%galleryPool.length])];
   const covered = property.coveredArea ?? (property.type === "Terreno" ? 0 : Math.round(property.area * .84));
   const garage = property.garages ?? (property.type === "Departamento" ? 1 : property.type === "Casa" ? 2 : 1);
-  const age = property.age || (property.id % 3 === 0 ? "A estrenar" : `${4 + property.id} a\u00f1os`);
+  const rawAge = property.age || (property.id % 3 === 0 ? "A estrenar" : `${4 + property.id} a\u00f1os`);
+  const age = rawAge.replace(/a(?:nos|\u00f1os)/gi, "a\u00f1os");
   const related=properties.filter(item=>item.id!==property.id&&(item.zone===property.zone||item.type===property.type)).slice(0,3);
   const mapUrl=`https://www.google.com/maps?q=${encodeURIComponent(property.location)}&output=embed`;
   return <main className="detail-page premium-detail"><SiteHeader/>

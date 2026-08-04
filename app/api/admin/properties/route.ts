@@ -5,7 +5,7 @@ import { getDb } from "../../../../db";
 import { propertyRecords } from "../../../../db/schema";
 import { ensureDatabaseSchema } from "../../../../db/ensure-schema";
 
-const validOperations = new Set(["Venta", "Alquiler"]);
+const validOperations = new Set(["Venta", "Alquiler", "Alquiler temporario"]);
 const validTypes = new Set(["Casa", "Departamento", "PH", "Terreno"]);
 const validCurrencies = new Set(["USD", "ARS"]);
 const validStatuses = new Set(["published", "draft", "reserved"]);
