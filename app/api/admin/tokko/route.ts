@@ -1,5 +1,5 @@
 import { getAdminIdentityFromRequest, isAdminRequestAuthorized } from "../../../admin-auth";
-import { getTokkoIntegration, saveTokkoIntegration, syncTokkoForAdmin, testTokkoConnection } from "../../../tokko-integration";
+import { getTokkoIntegration, saveTokkoIntegration, syncTokkoForAdmin, testTokkoConnection, unlinkTokkoIntegration } from "../../../tokko-integration";
 
 type Payload = {
   action?: "test" | "sync";
@@ -66,5 +66,16 @@ export async function POST(request: Request) {
     return Response.json({ error: "Accion no valida." }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "Tokko no respondio correctamente." }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const admin = await identity(request);
+  if (!admin) return Response.json({ error: "No autorizado" }, { status: 401 });
+  try {
+    const result = await unlinkTokkoIntegration(admin.id);
+    return Response.json({ result, integration: await getTokkoIntegration(admin.id) });
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "No se pudo desvincular Tokko." }, { status: 400 });
   }
 }

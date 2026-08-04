@@ -101,6 +101,12 @@ export async function saveTokkoIntegration(adminId: number, input: SaveTokkoInpu
   return getTokkoIntegration(adminId);
 }
 
+export async function unlinkTokkoIntegration(adminId: number) {
+  await ensureDatabaseSchema();
+  const result = await env.DB.prepare("DELETE FROM tokko_integrations WHERE admin_id=?").bind(adminId).run();
+  return { disconnected: Number(result.meta?.changes ?? 0) > 0 };
+}
+
 async function storedApiKey(adminId: number) {
   const row = await integrationRow(adminId);
   if (!row?.apiKeyCiphertext || !row.apiKeyIv) throw new Error("No hay una API key de Tokko guardada.");
