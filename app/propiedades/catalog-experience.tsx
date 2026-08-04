@@ -47,17 +47,22 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
   const [operation, setOperation] = useState("Todas");
   const [type, setType] = useState("Todos");
   const [zone, setZone] = useState("Todas");
+  const [rooms, setRooms] = useState("Todos");
   const typeOptions = useMemo(() => ["Todos", ...Array.from(new Set(properties.map(property => property.type.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))], [properties]);
   const zoneOptions = useMemo(() => ["Todas", ...Array.from(new Set(properties.map(property => property.zone.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))], [properties]);
-  const visible = useMemo(() => properties.filter(p => (operation === "Todas" || p.operation === operation) && (type === "Todos" || p.type === type) && (zone === "Todas" || p.zone === zone)), [operation, type, zone, properties]);
+  const visible = useMemo(() => properties.filter(p => {
+    const roomMatch = rooms === "Todos" || (rooms === "5+ ambientes" ? p.rooms >= 5 : p.rooms === Number.parseInt(rooms, 10));
+    return (operation === "Todas" || p.operation === operation) && (type === "Todos" || p.type === type) && (zone === "Todas" || p.zone === zone) && roomMatch;
+  }), [operation, type, zone, rooms, properties]);
 
   return <>
     <div className="catalog-controls">
       <CatalogDropdown label="OPERACI&Oacute;N" value={operation} options={["Todas", "Venta", "Alquiler", "Alquiler temporario"]} onChange={setOperation}/>
       <CatalogDropdown label="TIPO DE PROPIEDAD" value={type} options={typeOptions} onChange={setType}/>
       <CatalogDropdown label="ZONA" value={zone} options={zoneOptions} onChange={setZone}/>
+      <CatalogDropdown label="AMBIENTES" value={rooms} options={["Todos", "1 ambiente", "2 ambientes", "3 ambientes", "4 ambientes", "5+ ambientes"]} onChange={setRooms}/>
       <div className="catalog-result"><strong>{String(visible.length).padStart(2, "0")}</strong><span>RESULTADOS</span></div>
     </div>
-    <div className="property-grid" key={`${operation}-${type}-${zone}`}>{visible.map((p, i) => <PropertyCard key={p.id} property={p} index={i}/>)}</div>
+    <div className="property-grid" key={`${operation}-${type}-${zone}-${rooms}`}>{visible.map((p, i) => <PropertyCard key={p.id} property={p} index={i}/>)}</div>
   </>;
 }

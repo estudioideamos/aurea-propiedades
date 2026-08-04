@@ -1056,3 +1056,8 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
 .detail-gallery-grid>.gallery-4{grid-area:fifth}
 .detail-gallery-grid>button{min-width:0;min-height:0}
 }
+
+
+/* Catalog rooms filter layout */
+.catalog-page .catalog-controls{grid-template-columns:repeat(4,minmax(0,1fr)) 180px}
+@media(max-width:1180px) and (min-width:601px){.catalog-page .catalog-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-controls>.catalog-result{grid-column:1/-1;min-height:92px;flex-direction:row;gap:12px}}
