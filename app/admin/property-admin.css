@@ -120,3 +120,5 @@
 .manual-guide-body aside a{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--accent,#c7ff2b);font-size:10px;font-weight:850;text-decoration:none}.manual-guide-body aside a svg{width:14px}
 @media(max-width:680px){.tokko-danger-zone{align-items:stretch;flex-direction:column;padding:16px}.tokko-danger-zone>button{width:100%;justify-content:center}.tokko-dialog-backdrop{padding:14px}.tokko-dialog{padding:27px 21px;border-radius:23px}.tokko-dialog h3{font-size:31px}.tokko-dialog-actions{grid-template-columns:1fr}.tokko-dialog-actions button{width:100%}}
 @media(prefers-reduced-motion:reduce){.tokko-dialog-backdrop,.tokko-dialog{animation:none}}
+
+.tokko-notice.warning{background:#fff5d9;color:#7b5714;border:1px solid #efd897}.tokko-field-help{margin:-5px 0 2px;font-size:8.5px;line-height:1.45;color:#7d857a}

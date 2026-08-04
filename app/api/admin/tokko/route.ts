@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       return Response.json({ result });
     }
     if (payload.action === "sync") {
-      const result = await syncTokkoForAdmin(admin.id);
+      const result = await syncTokkoForAdmin(admin.id, { forceFull: true });
       return Response.json({ result, integration: await getTokkoIntegration(admin.id) });
     }
     return Response.json({ error: "Accion no valida." }, { status: 400 });

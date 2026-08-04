@@ -19,7 +19,7 @@ type IntegrationRow = {
 type TokkoResponse = { meta: { total_count: number; offset: number; limit: number }; objects: unknown[] };
 type SaveTokkoInput = { enabled: boolean; apiKey?: string; companyId?: number | null; branchId?: number | null };
 
-const API_URL = "https://www.tokkobroker.com/portals/simple_portal/api/v1/freeportals/";
+const API_URL = "https://www.tokkobroker.com/api/v1/property/";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -116,21 +116,17 @@ async function storedApiKey(adminId: number) {
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
-function text(value: unknown) { return typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim(); }
+function text(value: unknown) { const raw = typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim(); if (!/[��]/.test(raw)) return raw; try { return decoder.decode(Uint8Array.from([...raw].map(character => character.charCodeAt(0)))); } catch { return raw; } }
 function number(value: unknown) { const parsed = Number(value); return Number.isFinite(parsed) ? parsed : 0; }
 function integer(value: unknown) { const parsed = Math.trunc(number(value)); return parsed > 0 ? parsed : null; }
 
-async function fetchTokkoPage(apiKey: string, options: { companyId?: number | null; branchId?: number | null; offset?: number; limit?: number; filter?: "updated" | "deleted"; dateFrom?: string } = {}) {
+async function fetchTokkoPage(apiKey: string, options: { offset?: number; limit?: number } = {}) {
   const url = new URL(API_URL);
-  url.searchParams.set("api_key", apiKey);
+  url.searchParams.set("key", apiKey);
   url.searchParams.set("format", "json");
-  url.searchParams.set("lang", "es-AR");
+  url.searchParams.set("lang", "es_ar");
   url.searchParams.set("limit", String(options.limit ?? 20));
   url.searchParams.set("offset", String(options.offset ?? 0));
-  if (options.companyId) url.searchParams.set("company_id", String(options.companyId));
-  if (options.branchId) url.searchParams.set("branch_id", String(options.branchId));
-  if (options.filter) url.searchParams.set("filter", options.filter);
-  if (options.dateFrom) url.searchParams.set("date_from", options.dateFrom);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20000);
   try {
@@ -149,16 +145,17 @@ async function fetchTokkoPage(apiKey: string, options: { companyId?: number | nu
 
 export async function testTokkoConnection(input: { apiKey?: string; adminId: number; companyId?: number | null; branchId?: number | null }) {
   const apiKey = String(input.apiKey ?? "").trim() || await storedApiKey(input.adminId);
-  const page = await fetchTokkoPage(apiKey, { companyId: input.companyId, branchId: input.branchId, limit: 1 });
+  const page = await fetchTokkoPage(apiKey, { limit: 1 });
   const first = record(page.objects[0]);
-  const seller = record(first.seller);
+  const branch = record(first.branch);
   return {
     ok: true,
     total: page.meta.total_count,
-    companyId: integer(seller.company_id) ?? input.companyId ?? null,
-    companyName: text(seller.company_name),
-    branchId: integer(seller.branch_id) ?? input.branchId ?? null,
-    branchName: text(seller.branch_name),
+    companyId: input.companyId ?? null,
+    companyName: text(branch.display_name) || text(branch.name),
+    branchId: integer(branch.id) ?? input.branchId ?? null,
+    branchName: text(branch.display_name) || text(branch.name),
+    filterFallbackUsed: false,
   };
 }
 
@@ -184,6 +181,9 @@ function tokkoZone(value: string) {
   return "Interior";
 }
 function amenitiesFrom(source: Record<string, unknown>) {
+  if (Array.isArray(source.tags)) {
+    return [...new Set(source.tags.map(item => text(record(item).name)).filter(Boolean))].slice(0, 24);
+  }
   const tags = record(source.tags);
   const values = Object.values(tags).flatMap(value => Array.isArray(value) ? value.map(text) : []);
   return [...new Set(values.filter(Boolean))].slice(0, 24);
@@ -194,28 +194,38 @@ function photosFrom(source: Record<string, unknown>) {
 }
 function mapTokkoProperty(raw: unknown) {
   const source = record(raw);
-  const externalId = text(source.publication_id) || text(source.tokko_id);
+  const externalId = text(source.id) || text(source.reference_code);
   if (!externalId) return null;
-  const title = text(source.title) || `Propiedad ${externalId}`;
-  const fullLocation = text(source.operation_full_location);
-  const location = text(source.operation_location) || text(source.address) || fullLocation || "Ubicacion a consultar";
+  const title = text(source.publication_title) || text(source.title) || `Propiedad ${externalId}`;
+  const locationData = record(source.location);
+  const fullLocation = text(locationData.full_location) || text(locationData.short_location);
+  const address = text(source.fake_address) || text(source.address);
+  const locality = text(locationData.name);
+  const location = [address, locality].filter(Boolean).join(", ") || fullLocation || "Ubicacion a consultar";
   const photos = photosFrom(source);
-  const totalArea = Math.round(number(source.total_surface) || number(source.land) || number(source.roofed_surface) || 1);
-  const coveredArea = Math.round(number(source.roofed_surface));
-  const operationText = text(source.operation_type).toLowerCase();
-  const currencyText = text(source.operation_currency).toUpperCase();
+  const totalArea = Math.round(number(source.total_surface) || number(source.total_area) || number(source.surface) || number(source.roofed_surface) || 1);
+  const coveredArea = Math.round(number(source.roofed_surface) || number(source.livable_area));
+  const operations = Array.isArray(source.operations) ? source.operations.map(record) : [];
+  const operationData = operations.find(item => Array.isArray(item.prices) && item.prices.length) ?? operations[0] ?? {};
+  const prices = Array.isArray(operationData.prices) ? operationData.prices.map(record) : [];
+  const priceData = prices.find(item => !item.is_promotional) ?? prices[0] ?? {};
+  const operationText = text(operationData.operation_type).toLowerCase();
+  const currencyText = text(priceData.currency).toUpperCase();
   const currency = currencyText === "ARS" ? "ARS" : "USD";
   const age = Math.round(number(source.age));
+  const condition = record(source.property_condition);
+  const orientation = record(source.orientation);
+  const typeData = record(source.type);
   return {
     externalId,
-    slug: `tokko-${text(source.tokko_id) || slugify(externalId)}-${slugify(title).slice(0, 48)}`,
+    slug: `tokko-${text(source.id) || slugify(externalId)}-${slugify(title).slice(0, 48)}`,
     title,
     location,
     zone: tokkoZone(fullLocation || location),
-    operation: operationText.includes("alquiler") ? "Alquiler" : "Venta",
-    type: tokkoType(source.operation_category),
+    operation: operationText.includes("alquiler") || operationText.includes("rent") ? "Alquiler" : "Venta",
+    type: tokkoType(text(typeData.name) || source.operation_category),
     currency,
-    price: Math.max(0, Math.round(number(source.operation_amount))),
+    price: Math.max(0, Math.round(number(priceData.price))),
     rooms: Math.max(1, Math.round(number(source.room_amount) || number(source.suite_amount) + 1 || 1)),
     bedrooms: Math.max(0, Math.round(number(source.suite_amount))),
     bathrooms: Math.max(0, Math.round(number(source.bathroom_amount) + number(source.toilet_amount))),
@@ -223,13 +233,13 @@ function mapTokkoProperty(raw: unknown) {
     coveredArea: Math.max(0, coveredArea),
     garages: Math.max(0, Math.round(number(source.parking_lot_amount))),
     age: age === 0 ? "A estrenar" : `${age} anos`,
-    condition: text(source.property_condition) || "A consultar",
-    orientation: text(source.orientation) || "A consultar",
+    condition: text(condition.name) || text(source.property_condition) || "A consultar",
+    orientation: text(orientation.name) || text(source.orientation) || "A consultar",
     image: photos[0] ?? "",
     gallery: photos.slice(1),
-    description: cleanDescription(source.description),
+    description: cleanDescription(source.rich_description || source.description || source.description_only),
     amenities: amenitiesFrom(source),
-    externalUpdatedAt: text(source.last_modification) || new Date().toISOString(),
+    externalUpdatedAt: text(source.updated_at) || text(source.created_at) || new Date().toISOString(),
   };
 }
 
@@ -247,47 +257,48 @@ async function upsertTokkoProperty(item: NonNullable<ReturnType<typeof mapTokkoP
     .bind(item.slug,item.title,item.location,item.zone,item.operation,item.type,item.currency,item.price,"","",item.rooms,item.bedrooms,item.bathrooms,item.area,item.coveredArea,item.garages,item.age,item.condition,item.orientation,item.image,JSON.stringify(item.gallery),item.description,JSON.stringify(item.amenities),"published",0,"tokko",item.externalId,item.externalUpdatedAt).run();
 }
 
-async function pagedTokko(apiKey: string, options: { companyId?: number | null; branchId?: number | null; filter?: "updated" | "deleted"; dateFrom?: string }) {
+async function pagedTokko(apiKey: string) {
   const all: unknown[] = [];
   const limit = 20;
   for (let offset = 0; offset < 1000; offset += limit) {
-    const page = await fetchTokkoPage(apiKey, { ...options, offset, limit });
+    const page = await fetchTokkoPage(apiKey, { offset, limit });
     all.push(...page.objects);
     if (offset + page.objects.length >= page.meta.total_count || page.objects.length === 0) break;
   }
   return all;
 }
 
-export async function syncTokkoForAdmin(adminId: number) {
+export async function syncTokkoForAdmin(adminId: number, _options: { forceFull?: boolean } = {}) {
   const row = await integrationRow(adminId);
   if (!row?.enabled) throw new Error("Activa Tokko antes de sincronizar.");
   const apiKey = await storedApiKey(adminId);
   const startedAt = new Date().toISOString();
   await env.DB.prepare("UPDATE tokko_integrations SET last_sync_status='syncing', sync_started_at=?, last_sync_error='' WHERE admin_id=?").bind(startedAt, adminId).run();
   try {
-    const incremental = Boolean(row.lastSyncAt);
-    const updated = await pagedTokko(apiKey, { companyId: row.companyId, branchId: row.branchId, filter: incremental ? "updated" : undefined, dateFrom: incremental ? row.lastSyncAt! : undefined });
+    const updated = await pagedTokko(apiKey);
     let imported = 0;
+    const activeExternalIds: string[] = [];
     for (const raw of updated) {
       const item = mapTokkoProperty(raw);
-      if (!item || !item.image) continue;
+      if (!item) continue;
+      activeExternalIds.push(item.externalId);
+      if (!item.image) continue;
       await upsertTokkoProperty(item);
       imported += 1;
     }
+
     let removed = 0;
-    if (incremental) {
-      const deleted = await pagedTokko(apiKey, { companyId: row.companyId, branchId: row.branchId, filter: "deleted", dateFrom: row.lastSyncAt! });
-      for (const raw of deleted) {
-        const item = record(raw);
-        const externalId = text(item.publication_id) || text(item.id) || text(raw);
-        if (!externalId) continue;
-        const result = await env.DB.prepare("DELETE FROM properties WHERE source='tokko' AND external_id=?").bind(externalId).run();
-        removed += Number(result.meta.changes ?? 0);
-      }
+    const existing = await env.DB.prepare("SELECT external_id AS externalId FROM properties WHERE source='tokko' AND external_id IS NOT NULL").all<{ externalId: string }>();
+    const active = new Set(activeExternalIds);
+    for (const property of existing.results ?? []) {
+      if (active.has(String(property.externalId))) continue;
+      const result = await env.DB.prepare("DELETE FROM properties WHERE source='tokko' AND external_id=?").bind(property.externalId).run();
+      removed += Number(result.meta.changes ?? 0);
     }
+
     const finishedAt = new Date().toISOString();
     await env.DB.prepare("UPDATE tokko_integrations SET last_sync_at=?, last_sync_status='success', last_sync_count=?, last_sync_error='', sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?").bind(finishedAt, imported, adminId).run();
-    return { imported, removed, totalProcessed: updated.length, lastSyncAt: finishedAt };
+    return { imported, removed, totalProcessed: updated.length, lastSyncAt: finishedAt, filterFallbackUsed: false };
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo sincronizar con Tokko.";
     await env.DB.prepare("UPDATE tokko_integrations SET last_sync_status='error', last_sync_error=?, sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?").bind(message.slice(0, 500), adminId).run();

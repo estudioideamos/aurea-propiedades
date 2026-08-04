@@ -56,6 +56,6 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
       <CatalogDropdown label="ZONA" value={zone} options={["Todas", "CABA", "Zona Norte"]} onChange={setZone}/>
       <div className="catalog-result"><strong>{String(visible.length).padStart(2, "0")}</strong><span>RESULTADOS</span></div>
     </div>
-    <div className="property-grid">{visible.map((p, i) => <PropertyCard key={p.id} property={p} index={i}/>)}</div>
+    <div className="property-grid" key={`${operation}-${type}-${zone}`}>{visible.map((p, i) => <PropertyCard key={p.id} property={p} index={i}/>)}</div>
   </>;
 }
