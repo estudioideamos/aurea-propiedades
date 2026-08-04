@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const propertyRecords = sqliteTable("properties", {
-  id: integer("id").primaryKey({ autoIncrement: true }), slug: text("slug").notNull().unique(), title: text("title").notNull(), location: text("location").notNull(), zone: text("zone").notNull(), operation: text("operation").notNull(), type: text("type").notNull(), currency: text("currency").notNull().default("USD"), price: integer("price").notNull(), pricePrefix: text("price_prefix").notNull().default(""), priceSuffix: text("price_suffix").notNull().default(""), rooms: integer("rooms").notNull().default(1), bedrooms: integer("bedrooms").notNull().default(1), bathrooms: integer("bathrooms").notNull().default(1), area: integer("area").notNull(), coveredArea: integer("covered_area").notNull().default(0), garages: integer("garages").notNull().default(0), age: text("age").notNull().default(""), condition: text("condition").notNull().default("Excelente"), orientation: text("orientation").notNull().default("Norte"), image: text("image").notNull(), gallery: text("gallery").notNull().default("[]"), description: text("description").notNull().default(""), amenities: text("amenities").notNull().default("[]"), status: text("status").notNull().default("published"), featured: integer("featured", { mode: "boolean" }).notNull().default(false), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  id: integer("id").primaryKey({ autoIncrement: true }), slug: text("slug").notNull().unique(), title: text("title").notNull(), location: text("location").notNull(), zone: text("zone").notNull(), operation: text("operation").notNull(), type: text("type").notNull(), currency: text("currency").notNull().default("USD"), price: integer("price").notNull(), pricePrefix: text("price_prefix").notNull().default(""), priceSuffix: text("price_suffix").notNull().default(""), rooms: integer("rooms").notNull().default(1), bedrooms: integer("bedrooms").notNull().default(1), bathrooms: integer("bathrooms").notNull().default(1), area: integer("area").notNull(), coveredArea: integer("covered_area").notNull().default(0), garages: integer("garages").notNull().default(0), age: text("age").notNull().default(""), condition: text("condition").notNull().default("Excelente"), orientation: text("orientation").notNull().default("Norte"), image: text("image").notNull(), gallery: text("gallery").notNull().default("[]"), description: text("description").notNull().default(""), amenities: text("amenities").notNull().default("[]"), status: text("status").notNull().default("published"), featured: integer("featured", { mode: "boolean" }).notNull().default(false), source: text("source").notNull().default("manual"), externalId: text("external_id"), externalUpdatedAt: text("external_updated_at"), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const leads = sqliteTable("leads", {
@@ -44,6 +44,23 @@ export const developmentRecords = sqliteTable("developments", {
   amenities: text("amenities").notNull().default("[]"),
   specifications: text("specifications").notNull().default("[]"),
   publicationStatus: text("publication_status").notNull().default("published"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const tokkoIntegrations = sqliteTable("tokko_integrations", {
+  adminId: integer("admin_id").primaryKey(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(false),
+  apiKeyCiphertext: text("api_key_ciphertext"),
+  apiKeyIv: text("api_key_iv"),
+  apiKeyHint: text("api_key_hint").notNull().default(""),
+  companyId: integer("company_id"),
+  branchId: integer("branch_id"),
+  lastSyncAt: text("last_sync_at"),
+  lastSyncStatus: text("last_sync_status").notNull().default("never"),
+  lastSyncCount: integer("last_sync_count").notNull().default(0),
+  lastSyncError: text("last_sync_error").notNull().default(""),
+  syncStartedAt: text("sync_started_at"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });

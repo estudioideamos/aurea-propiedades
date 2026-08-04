@@ -13,6 +13,9 @@ const propertyColumns: Record<string, string> = {
   condition: "TEXT DEFAULT 'Excelente' NOT NULL",
   orientation: "TEXT DEFAULT 'Norte' NOT NULL",
   gallery: "TEXT DEFAULT '[]' NOT NULL",
+  source: "TEXT DEFAULT 'manual' NOT NULL",
+  external_id: "TEXT",
+  external_updated_at: "TEXT",
 };
 
 async function upgradeSchema() {
@@ -57,6 +60,8 @@ async function upgradeSchema() {
   }
 
   await database.prepare("CREATE UNIQUE INDEX IF NOT EXISTS properties_slug_unique ON properties (slug)").run();
+  await database.prepare("CREATE UNIQUE INDEX IF NOT EXISTS properties_external_id_unique ON properties (external_id) WHERE external_id IS NOT NULL").run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS properties_source_status_index ON properties (source, status)").run();
   await database.prepare(`CREATE TABLE IF NOT EXISTS leads (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     property_id INTEGER,
@@ -137,6 +142,24 @@ async function upgradeSchema() {
     attempted_at TEXT NOT NULL
   )`).run();
   await database.prepare("CREATE INDEX IF NOT EXISTS admin_login_attempts_lookup ON admin_login_attempts(email,ip,attempted_at)").run();
+  await database.prepare(`CREATE TABLE IF NOT EXISTS tokko_integrations (
+    admin_id INTEGER PRIMARY KEY NOT NULL,
+    enabled INTEGER DEFAULT 0 NOT NULL,
+    api_key_ciphertext TEXT,
+    api_key_iv TEXT,
+    api_key_hint TEXT DEFAULT '' NOT NULL,
+    company_id INTEGER,
+    branch_id INTEGER,
+    last_sync_at TEXT,
+    last_sync_status TEXT DEFAULT 'never' NOT NULL,
+    last_sync_count INTEGER DEFAULT 0 NOT NULL,
+    last_sync_error TEXT DEFAULT '' NOT NULL,
+    sync_started_at TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE
+  )`).run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS tokko_integrations_enabled_index ON tokko_integrations(enabled)").run();
 }
 
 export function ensureDatabaseSchema() {

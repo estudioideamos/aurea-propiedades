@@ -57,6 +57,7 @@ export async function getLiveDevelopment(slug: string) { return { development: d
 await rm(new URL("../app/admin", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/auth", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/admin-auth.ts", import.meta.url), { force: true });
+await rm(new URL("../app/tokko-integration.ts", import.meta.url), { force: true });
 await rm(new URL("../app/chatgpt-auth.ts", import.meta.url), { force: true });
 await rm(new URL("../db", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/admin", import.meta.url), { recursive: true, force: true });

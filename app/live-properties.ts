@@ -11,6 +11,7 @@ function parseStringArray(value: unknown): string[] {
 
 export async function getLiveProperties(): Promise<LiveProperty[]> {
   if (process.env.GITHUB_PAGES === "true") return staticProperties;
+  try { const { refreshTokkoIfDue } = await import("./tokko-integration"); await refreshTokkoIfDue(); } catch { /* La cartera manual sigue disponible si Tokko no responde. */ }
   try {
     const [{ desc, eq }, { getDb }, { propertyRecords }] = await Promise.all([
       import("drizzle-orm"), import("../db"), import("../db/schema"),
