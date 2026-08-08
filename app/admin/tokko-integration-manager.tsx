@@ -14,7 +14,7 @@ type Integration = {
   lastSyncCount: number;
   lastSyncError: string;
 };
-type TestResult = { total: number; companyId: number | null; companyName: string; branchId: number | null; branchName: string; filterFallbackUsed: boolean };
+type TestResult = { total: number; propertyTotal: number; developmentTotal: number; companyId: number | null; companyName: string; branchId: number | null; branchName: string; filterFallbackUsed: boolean };
 const initial: Integration = { enabled: false, apiKeyConfigured: false, apiKeyHint: "", companyId: null, branchId: null, lastSyncAt: null, lastSyncStatus: "never", lastSyncCount: 0, lastSyncError: "" };
 
 function dateLabel(value: string | null) {
@@ -57,9 +57,9 @@ export function TokkoIntegrationManager() {
       setTestResult(data.result);
       if (!companyId && data.result.companyId) setCompanyId(String(data.result.companyId));
       if (!branchId && data.result.branchId) setBranchId(String(data.result.branchId));
-      setNotice(data.result.total > 0
-        ? "Conexion correcta: la API web de Tokko informa " + data.result.total + " propiedades publicables."
-        : "Tokko respondio correctamente, pero su API web devuelve 0 propiedades. Revisa que esten habilitadas para visualizar en la web.");
+      setNotice(data.result.propertyTotal > 0 || data.result.developmentTotal > 0
+        ? "Conexion correcta: Tokko informa " + data.result.propertyTotal + " propiedades y " + data.result.developmentTotal + " emprendimientos publicables."
+        : "Tokko respondio correctamente, pero su API web devuelve 0 propiedades y 0 emprendimientos. Revisa que las fichas esten habilitadas para visualizar en la web.");
     } catch (error) { setNotice(error instanceof Error ? error.message : "No se pudo probar la conexion."); }
     finally { setWorking(""); }
   }
@@ -80,16 +80,16 @@ export function TokkoIntegrationManager() {
     setWorking("sync"); setNotice("");
     try {
       const response = await fetch("/api/admin/tokko", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "sync" }) });
-      const data = await response.json() as { result?: { imported: number; removed: number; totalProcessed: number; filterFallbackUsed: boolean }; integration?: Integration; error?: string };
+      const data = await response.json() as { result?: { imported: number; removed: number; totalProcessed: number; developmentImported: number; developmentRemoved: number; developmentTotalProcessed: number; filterFallbackUsed: boolean }; integration?: Integration; error?: string };
       if (!response.ok || !data.result || !data.integration) throw new Error(data.error || "No se pudo sincronizar.");
       setIntegration(data.integration);
       setCompanyId(data.integration.companyId ? String(data.integration.companyId) : "");
-      if (data.result.totalProcessed === 0) {
-        setNotice("Tokko sigue devolviendo 0 propiedades en su API web. Revisa que las fichas esten habilitadas para visualizar en la web.");
-      } else if (data.result.imported === 0) {
-        setNotice("Tokko devolvio " + data.result.totalProcessed + " propiedades, pero ninguna tiene una imagen utilizable. Completa la multimedia y volve a sincronizar.");
+      if (data.result.totalProcessed === 0 && data.result.developmentTotalProcessed === 0) {
+        setNotice("Tokko sigue devolviendo 0 propiedades y 0 emprendimientos en su API web. Revisa que las fichas esten habilitadas para visualizar en la web.");
+      } else if (data.result.imported === 0 && data.result.developmentImported === 0) {
+        setNotice("Tokko devolvio registros, pero ninguno tiene una imagen utilizable. Completa la multimedia y volve a sincronizar.");
       } else {
-        setNotice("Sincronizacion completa: " + data.result.imported + " propiedades actualizadas y " + data.result.removed + " retiradas.");
+        setNotice("Sincronizacion completa: " + data.result.imported + " propiedades y " + data.result.developmentImported + " emprendimientos actualizados; " + (data.result.removed + data.result.developmentRemoved) + " retirados.");
       }
     } catch (error) { setNotice(error instanceof Error ? error.message : "No se pudo sincronizar."); }
     finally { setWorking(""); }
@@ -103,7 +103,7 @@ export function TokkoIntegrationManager() {
       if (!response.ok || !data.integration) throw new Error(data.error || "No se pudo desvincular Tokko.");
       setIntegration(data.integration);
       setApiKey(""); setCompanyId(""); setBranchId(""); setTestResult(null); setConfirmUnlink(false);
-      setNotice("Cuenta desvinculada. Se eliminaron la API key y los identificadores guardados. Las propiedades existentes se conservaron.");
+      setNotice("Cuenta desvinculada. Se eliminaron la API key y los identificadores guardados. Las propiedades y los emprendimientos existentes se conservaron.");
     } catch (error) { setNotice(error instanceof Error ? error.message : "No se pudo desvincular Tokko."); }
     finally { setWorking(""); }
   }
@@ -118,7 +118,7 @@ export function TokkoIntegrationManager() {
       </button>
     </header>
 
-    <div className="tokko-mode-note"><DatabaseZap/><div><b>Dos formas de publicar, un solo cat&aacute;logo</b><span>Las propiedades manuales siguen editables. Tokko solo agrega y actualiza los registros que vienen de esa cuenta.</span></div></div>
+    <div className="tokko-mode-note"><DatabaseZap/><div><b>Dos formas de publicar, un solo cat&aacute;logo</b><span>Las propiedades y los emprendimientos manuales siguen editables. Tokko solo agrega y actualiza los registros que vienen de esa cuenta.</span></div></div>
 
     <form onSubmit={save} className="tokko-form">
       <label className="tokko-key-field"><span>API KEY DE TOKKO</span><div><KeyRound/><input type="password" value={apiKey} onChange={event => setApiKey(event.target.value)} placeholder={integration.apiKeyConfigured ? "Guardada y protegida - termina en " + integration.apiKeyHint : "Pega la API key"} autoComplete="new-password"/><EyeOff/></div><small>Se cifra antes de guardarse y nunca vuelve a mostrarse completa.</small></label>
@@ -128,7 +128,7 @@ export function TokkoIntegrationManager() {
       </div>
       <p className="tokko-field-help">El ID de empresa se guarda como referencia de la cuenta. La sincronizacion usa la API key y solo trae fichas habilitadas para la web.</p>
       {testResult && <div className="tokko-detected"><CheckCircle2/><div><b>{testResult.companyName || "Empresa identificada"}</b><span>Empresa {testResult.companyId ?? "-"}{testResult.branchName ? " / " + testResult.branchName : ""}{testResult.branchId ? " (" + testResult.branchId + ")" : ""}</span></div></div>}
-      {notice && <p className={integration.lastSyncStatus === "error" ? "tokko-notice error" : /0 propiedades|ninguna tiene|no coincidia/i.test(notice) ? "tokko-notice warning" : "tokko-notice"}>{notice}</p>}
+      {notice && <p className={integration.lastSyncStatus === "error" ? "tokko-notice error" : /0 propiedades|0 emprendimientos|ninguna tiene|no coincidia/i.test(notice) ? "tokko-notice warning" : "tokko-notice"}>{notice}</p>}
       <div className="tokko-actions">
         <button type="button" onClick={() => void testConnection()} disabled={disabled || (!apiKey.trim() && !integration.apiKeyConfigured)}>{working === "test" ? <LoaderCircle className="spin"/> : <ShieldCheck/>} Probar conexi&oacute;n</button>
         <button type="submit" className="primary" disabled={disabled}>{working === "save" ? <LoaderCircle className="spin"/> : <Save/>} Guardar configuraci&oacute;n</button>
@@ -151,8 +151,8 @@ export function TokkoIntegrationManager() {
         <div className="tokko-dialog-icon"><AlertTriangle/></div>
         <p>DESVINCULAR INTEGRACI&Oacute;N</p>
         <h3 id="tokko-unlink-title">&iquest;Desconectar Tokko Broker?</h3>
-        <span>Se borrar&aacute;n la API key protegida, el ID de empresa, la sucursal y el historial de sincronizaci&oacute;n. Las propiedades ya importadas no se eliminan y quedan visibles con su &uacute;ltima informaci&oacute;n.</span>
-        <div className="tokko-dialog-note"><ShieldCheck/><small>Las propiedades cargadas manualmente nunca se modifican.</small></div>
+        <span>Se borrar&aacute;n la API key protegida, el ID de empresa, la sucursal y el historial de sincronizaci&oacute;n. Las propiedades y los emprendimientos ya importados no se eliminan y quedan visibles con su &uacute;ltima informaci&oacute;n.</span>
+        <div className="tokko-dialog-note"><ShieldCheck/><small>Las propiedades y los emprendimientos cargados manualmente nunca se modifican.</small></div>
         <div className="tokko-dialog-actions">
           <button type="button" onClick={() => setConfirmUnlink(false)} disabled={disabled}>Cancelar</button>
           <button type="button" className="danger" onClick={() => void unlinkAccount()} disabled={disabled}>{working === "unlink" ? <LoaderCircle className="spin"/> : <Unplug/>} S&iacute;, desvincular</button>

@@ -44,6 +44,9 @@ export const developmentRecords = sqliteTable("developments", {
   amenities: text("amenities").notNull().default("[]"),
   specifications: text("specifications").notNull().default("[]"),
   publicationStatus: text("publication_status").notNull().default("published"),
+  source: text("source").notNull().default("manual"),
+  externalId: text("external_id"),
+  externalUpdatedAt: text("external_updated_at"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });

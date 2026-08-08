@@ -13,7 +13,7 @@ function slugify(value: string) { return value.normalize("NFD").replace(/[\u0300
 function strings(value: unknown) { if (Array.isArray(value)) return value.map(String).map(item=>item.trim()).filter(Boolean); if (typeof value === "string") return value.split(/[,\n]/).map(item=>item.trim()).filter(Boolean); return []; }
 function parse(value: string) { try { return JSON.parse(value) as string[]; } catch { return []; } }
 function serialize(row: typeof developmentRecords.$inferSelect): Development & { publicationStatus: PublicationStatus } {
-  const result: Development & { publicationStatus: PublicationStatus } = { ...row, currency: row.currency as "USD"|"ARS", priceValue: row.priceValue, pricePrefix: row.pricePrefix, priceSuffix: row.priceSuffix, price: "", gallery: parse(row.gallery), description: parse(row.description), amenities: parse(row.amenities), specifications: parse(row.specifications), publicationStatus: row.publicationStatus as PublicationStatus };
+  const result: Development & { publicationStatus: PublicationStatus } = { ...row, currency: row.currency as "USD"|"ARS", source: row.source as "manual"|"tokko", priceValue: row.priceValue, pricePrefix: row.pricePrefix, priceSuffix: row.priceSuffix, price: "", gallery: parse(row.gallery), description: parse(row.description), amenities: parse(row.amenities), specifications: parse(row.specifications), publicationStatus: row.publicationStatus as PublicationStatus };
   result.price = formatDevelopmentPrice(result); return result;
 }
 async function ensureSeeded() {

@@ -19,7 +19,11 @@ type IntegrationRow = {
 type TokkoResponse = { meta: { total_count: number; offset: number; limit: number }; objects: unknown[] };
 type SaveTokkoInput = { enabled: boolean; apiKey?: string; companyId?: number | null; branchId?: number | null };
 
-const API_URL = "https://www.tokkobroker.com/api/v1/property/";
+const TOKKO_API_URLS = {
+  property: "https://www.tokkobroker.com/api/v1/property/",
+  development: "https://www.tokkobroker.com/api/v1/development/",
+} as const;
+type TokkoResource = keyof typeof TOKKO_API_URLS;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -120,18 +124,23 @@ function text(value: unknown) { const raw = typeof value === "string" ? value.tr
 function number(value: unknown) { const parsed = Number(value); return Number.isFinite(parsed) ? parsed : 0; }
 function integer(value: unknown) { const parsed = Math.trunc(number(value)); return parsed > 0 ? parsed : null; }
 
-async function fetchTokkoPage(apiKey: string, options: { offset?: number; limit?: number } = {}) {
-  const url = new URL(API_URL);
+async function fetchTokkoPage(
+  apiKey: string,
+  resource: TokkoResource,
+  options: { offset?: number; limit?: number; branchId?: number | null } = {},
+) {
+  const url = new URL(TOKKO_API_URLS[resource]);
   url.searchParams.set("key", apiKey);
   url.searchParams.set("format", "json");
   url.searchParams.set("lang", "es_ar");
   url.searchParams.set("limit", String(options.limit ?? 20));
   url.searchParams.set("offset", String(options.offset ?? 0));
+  if (options.branchId) url.searchParams.set("branch_id", String(options.branchId));
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20000);
   try {
     const response = await fetch(url, { headers: { accept: "application/json" }, signal: controller.signal });
-    if (!response.ok) throw new Error(response.status === 401 || response.status === 403 ? "Tokko rechazo la API key." : `Tokko respondio con estado ${response.status}.`);
+    if (!response.ok) throw new Error(response.status === 401 || response.status === 403 ? "Tokko rechazo la API key." : `Tokko respondio con estado ${response.status} al consultar ${resource === "property" ? "propiedades" : "emprendimientos"}.`);
     const data = await response.json() as unknown;
     const root = record(data);
     const meta = record(root.meta);
@@ -140,17 +149,24 @@ async function fetchTokkoPage(apiKey: string, options: { offset?: number; limit?
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") throw new Error("Tokko demoro demasiado en responder.");
     throw error;
-  } finally { clearTimeout(timer); }
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function testTokkoConnection(input: { apiKey?: string; adminId: number; companyId?: number | null; branchId?: number | null }) {
   const apiKey = String(input.apiKey ?? "").trim() || await storedApiKey(input.adminId);
-  const page = await fetchTokkoPage(apiKey, { limit: 1 });
-  const first = record(page.objects[0]);
+  const [propertyPage, developmentPage] = await Promise.all([
+    fetchTokkoPage(apiKey, "property", { limit: 1 }),
+    fetchTokkoPage(apiKey, "development", { limit: 1, branchId: input.branchId }),
+  ]);
+  const first = record(propertyPage.objects[0] ?? developmentPage.objects[0]);
   const branch = record(first.branch);
   return {
     ok: true,
-    total: page.meta.total_count,
+    total: propertyPage.meta.total_count,
+    propertyTotal: propertyPage.meta.total_count,
+    developmentTotal: developmentPage.meta.total_count,
     companyId: input.companyId ?? null,
     companyName: text(branch.display_name) || text(branch.name),
     branchId: integer(branch.id) ?? input.branchId ?? null,
@@ -244,6 +260,118 @@ function mapTokkoProperty(raw: unknown) {
   };
 }
 
+
+function relatedName(value: unknown) {
+  const item = record(value);
+  return text(item.display_name) || text(item.name) || text(item.title) || text(value);
+}
+
+function developmentStatus(source: Record<string, unknown>) {
+  const raw = [
+    relatedName(source.construction_status),
+    relatedName(source.development_status),
+    relatedName(source.status),
+  ].find(Boolean) ?? "";
+  const normalized = raw.toLowerCase();
+  if (normalized.includes("pozo")) return "EN POZO";
+  if (normalized.includes("obra") || normalized.includes("constru")) return "EN CONSTRUCCI\u00d3N";
+  if (normalized.includes("termin") || normalized.includes("entreg")) return "TERMINADO";
+  return raw && !/^\d+$/.test(raw) ? raw.toUpperCase() : "EN CONSTRUCCI\u00d3N";
+}
+
+function developmentDelivery(source: Record<string, unknown>) {
+  const value = text(source.delivery_date) || text(source.estimated_delivery_date) || text(source.possession_date) || text(source.construction_end_date) || text(source.delivery);
+  if (!value) return "A confirmar";
+  const year = value.match(/(?:19|20)\d{2}/)?.[0];
+  return year ?? value;
+}
+
+function developmentUnits(source: Record<string, unknown>) {
+  const direct = text(source.unit_types) || text(source.units_description) || text(source.property_types);
+  if (direct && !/^\[object Object\]$/.test(direct)) return direct;
+  const candidates = [source.properties, source.units, source.property_types].find(Array.isArray);
+  if (!Array.isArray(candidates) || !candidates.length) return "Consultar tipolog\u00edas";
+  const rooms = candidates.map(item => {
+    const unit = record(item);
+    return Math.round(number(unit.room_amount) || number(unit.rooms) || number(unit.suite_amount) + 1);
+  }).filter(value => value > 0);
+  if (!rooms.length) return candidates.length + (candidates.length === 1 ? " unidad" : " unidades");
+  const min = Math.min(...rooms);
+  const max = Math.max(...rooms);
+  return min === max ? min + " ambientes" : min + " a " + max + " ambientes";
+}
+
+function developmentPrice(source: Record<string, unknown>) {
+  const operations = Array.isArray(source.operations) ? source.operations.map(record) : [];
+  const priceRecords = operations.flatMap(operation => Array.isArray(operation.prices) ? operation.prices.map(record) : []);
+  const direct = record(source.minimum_price);
+  const priceRecord = priceRecords.find(item => number(item.price) > 0) ?? (number(direct.price) > 0 ? direct : {});
+  const value = number(priceRecord.price) || number(source.minimum_price) || number(source.min_price) || number(source.price_from) || number(source.price);
+  const currencyValue = text(priceRecord.currency) || text(record(source.minimum_price).currency) || text(source.currency);
+  return {
+    currency: currencyValue.toUpperCase() === "ARS" ? "ARS" as const : "USD" as const,
+    value: Math.max(0, Math.round(value)),
+  };
+}
+
+function developmentDescriptions(source: Record<string, unknown>) {
+  const description = cleanDescription(source.rich_description || source.description || source.description_only || source.publication_description);
+  if (!description) return ["Consultanos para conocer todos los detalles de este emprendimiento."];
+  const paragraphs = description.split(/\n{2,}/).map(item => item.trim()).filter(Boolean);
+  return paragraphs.length ? paragraphs.slice(0, 8) : [description];
+}
+
+function relatedCount(value: unknown) {
+  if (Array.isArray(value)) return value.length;
+  return Math.max(0, Math.round(number(value)));
+}
+
+function mapTokkoDevelopment(raw: unknown) {
+  const source = record(raw);
+  const externalId = text(source.id) || text(source.reference_code);
+  if (!externalId) return null;
+  const title = text(source.publication_title) || text(source.name) || text(source.title) || "Emprendimiento " + externalId;
+  const locationData = record(source.location);
+  const fullLocation = text(locationData.full_location) || text(locationData.short_location) || text(locationData.name);
+  const address = text(source.fake_address) || text(source.address);
+  const locality = text(locationData.name);
+  const location = [address, locality].filter(Boolean).join(", ") || fullLocation || "Ubicaci\u00f3n a consultar";
+  const photos = photosFrom(source);
+  const price = developmentPrice(source);
+  const unitCount = relatedCount(source.properties) || relatedCount(source.units) || relatedCount(source.property_count) || relatedCount(source.units_count);
+  const floorCount = relatedCount(source.floor_amount) || relatedCount(source.floors) || relatedCount(source.stories);
+  const garageCount = relatedCount(source.parking_lot_amount) || relatedCount(source.garages);
+  const amenities = [...new Set([
+    ...amenitiesFrom(source),
+    ...(Array.isArray(source.amenities) ? source.amenities.map(item => relatedName(item)).filter(Boolean) : []),
+  ])].slice(0, 30);
+  return {
+    externalId,
+    slug: "tokko-dev-" + (text(source.id) || slugify(externalId)) + "-" + slugify(title).slice(0, 48),
+    title,
+    location,
+    neighborhood: locality || fullLocation || tokkoZone(location),
+    status: developmentStatus(source),
+    delivery: developmentDelivery(source),
+    units: developmentUnits(source),
+    currency: price.currency,
+    priceValue: price.value,
+    pricePrefix: price.value > 0 ? "Desde" : "Consultar valor",
+    priceSuffix: "",
+    image: photos[0] ?? "",
+    gallery: photos.slice(1),
+    floors: floorCount > 0 ? floorCount + " " + (floorCount === 1 ? "piso" : "pisos") : "",
+    apartments: unitCount > 0 ? unitCount + " " + (unitCount === 1 ? "unidad" : "unidades") : "",
+    garages: garageCount > 0 ? garageCount + " " + (garageCount === 1 ? "cochera" : "cocheras") : "",
+    developer: relatedName(source.developer) || relatedName(source.development_company) || relatedName(source.producer),
+    architect: relatedName(source.architect) || relatedName(source.architecture_studio),
+    description: developmentDescriptions(source),
+    amenities,
+    specifications: Array.isArray(source.features) ? source.features.map(item => relatedName(item)).filter(Boolean).slice(0, 30) : [],
+    externalUpdatedAt: text(source.updated_at) || text(source.created_at) || new Date().toISOString(),
+  };
+}
+
 async function upsertTokkoProperty(item: NonNullable<ReturnType<typeof mapTokkoProperty>>) {
   await env.DB.prepare(`INSERT INTO properties
     (slug,title,location,zone,operation,type,currency,price,price_prefix,price_suffix,rooms,bedrooms,bathrooms,area,
@@ -258,11 +386,33 @@ async function upsertTokkoProperty(item: NonNullable<ReturnType<typeof mapTokkoP
     .bind(item.slug,item.title,item.location,item.zone,item.operation,item.type,item.currency,item.price,"","",item.rooms,item.bedrooms,item.bathrooms,item.area,item.coveredArea,item.garages,item.age,item.condition,item.orientation,item.image,JSON.stringify(item.gallery),item.description,JSON.stringify(item.amenities),"published",0,"tokko",item.externalId,item.externalUpdatedAt).run();
 }
 
-async function pagedTokko(apiKey: string) {
+
+async function upsertTokkoDevelopment(item: NonNullable<ReturnType<typeof mapTokkoDevelopment>>) {
+  await env.DB.prepare(`INSERT INTO developments
+    (slug,title,location,neighborhood,status,delivery,units,currency,price_value,price_prefix,price_suffix,image,gallery,
+    floors,apartments,garages,developer,architect,description,amenities,specifications,publication_status,source,external_id,external_updated_at,updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)
+    ON CONFLICT(external_id) WHERE external_id IS NOT NULL DO UPDATE SET
+    title=excluded.title,location=excluded.location,neighborhood=excluded.neighborhood,status=excluded.status,
+    delivery=excluded.delivery,units=excluded.units,currency=excluded.currency,price_value=excluded.price_value,
+    price_prefix=excluded.price_prefix,price_suffix=excluded.price_suffix,image=excluded.image,gallery=excluded.gallery,
+    floors=excluded.floors,apartments=excluded.apartments,garages=excluded.garages,developer=excluded.developer,
+    architect=excluded.architect,description=excluded.description,amenities=excluded.amenities,
+    specifications=excluded.specifications,publication_status='published',source='tokko',
+    external_updated_at=excluded.external_updated_at,updated_at=CURRENT_TIMESTAMP`)
+    .bind(
+      item.slug,item.title,item.location,item.neighborhood,item.status,item.delivery,item.units,item.currency,
+      item.priceValue,item.pricePrefix,item.priceSuffix,item.image,JSON.stringify(item.gallery),item.floors,item.apartments,
+      item.garages,item.developer,item.architect,JSON.stringify(item.description),JSON.stringify(item.amenities),
+      JSON.stringify(item.specifications),"published","tokko",item.externalId,item.externalUpdatedAt,
+    ).run();
+}
+
+async function pagedTokko(apiKey: string, resource: TokkoResource, branchId?: number | null) {
   const all: unknown[] = [];
   const limit = 20;
   for (let offset = 0; offset < 1000; offset += limit) {
-    const page = await fetchTokkoPage(apiKey, { offset, limit });
+    const page = await fetchTokkoPage(apiKey, resource, { offset, limit, branchId });
     all.push(...page.objects);
     if (offset + page.objects.length >= page.meta.total_count || page.objects.length === 0) break;
   }
@@ -276,30 +426,62 @@ export async function syncTokkoForAdmin(adminId: number, _options: { forceFull?:
   const startedAt = new Date().toISOString();
   await env.DB.prepare("UPDATE tokko_integrations SET last_sync_status='syncing', sync_started_at=?, last_sync_error='' WHERE admin_id=?").bind(startedAt, adminId).run();
   try {
-    const updated = await pagedTokko(apiKey);
+    const updatedProperties = await pagedTokko(apiKey, "property");
+    const updatedDevelopments = await pagedTokko(apiKey, "development", row.branchId);
+
     let imported = 0;
-    const activeExternalIds: string[] = [];
-    for (const raw of updated) {
+    const activePropertyIds: string[] = [];
+    for (const raw of updatedProperties) {
       const item = mapTokkoProperty(raw);
       if (!item) continue;
-      activeExternalIds.push(item.externalId);
+      activePropertyIds.push(item.externalId);
       if (!item.image) continue;
       await upsertTokkoProperty(item);
       imported += 1;
     }
 
+    let developmentImported = 0;
+    const activeDevelopmentIds: string[] = [];
+    for (const raw of updatedDevelopments) {
+      const item = mapTokkoDevelopment(raw);
+      if (!item) continue;
+      activeDevelopmentIds.push(item.externalId);
+      if (!item.image) continue;
+      await upsertTokkoDevelopment(item);
+      developmentImported += 1;
+    }
+
     let removed = 0;
-    const existing = await env.DB.prepare("SELECT external_id AS externalId FROM properties WHERE source='tokko' AND external_id IS NOT NULL").all<{ externalId: string }>();
-    const active = new Set(activeExternalIds);
-    for (const property of existing.results ?? []) {
-      if (active.has(String(property.externalId))) continue;
+    const existingProperties = await env.DB.prepare("SELECT external_id AS externalId FROM properties WHERE source='tokko' AND external_id IS NOT NULL").all<{ externalId: string }>();
+    const activeProperties = new Set(activePropertyIds);
+    for (const property of existingProperties.results ?? []) {
+      if (activeProperties.has(String(property.externalId))) continue;
       const result = await env.DB.prepare("DELETE FROM properties WHERE source='tokko' AND external_id=?").bind(property.externalId).run();
       removed += Number(result.meta.changes ?? 0);
     }
 
+    let developmentRemoved = 0;
+    const existingDevelopments = await env.DB.prepare("SELECT external_id AS externalId FROM developments WHERE source='tokko' AND external_id IS NOT NULL").all<{ externalId: string }>();
+    const activeDevelopments = new Set(activeDevelopmentIds);
+    for (const development of existingDevelopments.results ?? []) {
+      if (activeDevelopments.has(String(development.externalId))) continue;
+      const result = await env.DB.prepare("DELETE FROM developments WHERE source='tokko' AND external_id=?").bind(development.externalId).run();
+      developmentRemoved += Number(result.meta.changes ?? 0);
+    }
+
     const finishedAt = new Date().toISOString();
-    await env.DB.prepare("UPDATE tokko_integrations SET last_sync_at=?, last_sync_status='success', last_sync_count=?, last_sync_error='', sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?").bind(finishedAt, imported, adminId).run();
-    return { imported, removed, totalProcessed: updated.length, lastSyncAt: finishedAt, filterFallbackUsed: false };
+    await env.DB.prepare("UPDATE tokko_integrations SET last_sync_at=?, last_sync_status='success', last_sync_count=?, last_sync_error='', sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?")
+      .bind(finishedAt, imported + developmentImported, adminId).run();
+    return {
+      imported,
+      removed,
+      totalProcessed: updatedProperties.length,
+      developmentImported,
+      developmentRemoved,
+      developmentTotalProcessed: updatedDevelopments.length,
+      lastSyncAt: finishedAt,
+      filterFallbackUsed: false,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo sincronizar con Tokko.";
     await env.DB.prepare("UPDATE tokko_integrations SET last_sync_status='error', last_sync_error=?, sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?").bind(message.slice(0, 500), adminId).run();

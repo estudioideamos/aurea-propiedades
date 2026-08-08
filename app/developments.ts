@@ -13,6 +13,9 @@ export type Development = {
   pricePrefix?: string;
   priceSuffix?: string;
   publicationStatus?: "published" | "draft";
+  source?: "manual" | "tokko";
+  externalId?: string | null;
+  externalUpdatedAt?: string | null;
   updatedAt?: string;
   image: string;
   gallery: string[];
@@ -72,6 +75,7 @@ export const developments: Development[] = rawDevelopments.map((item, index) => 
 
 export const formatDevelopmentPrice = (development: Development) => {
   if (typeof development.priceValue !== "number") return development.price;
+  if (development.priceValue <= 0) return development.pricePrefix?.trim() || "Consultar valor";
   const base = `${development.currency ?? "USD"} ${new Intl.NumberFormat("es-AR").format(development.priceValue)}`;
   return [development.pricePrefix?.trim(), base, development.priceSuffix?.trim()].filter(Boolean).join(" ");
 };

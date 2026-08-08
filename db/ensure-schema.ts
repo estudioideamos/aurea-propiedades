@@ -18,6 +18,12 @@ const propertyColumns: Record<string, string> = {
   external_updated_at: "TEXT",
 };
 
+const developmentColumns: Record<string, string> = {
+  source: "TEXT DEFAULT 'manual' NOT NULL",
+  external_id: "TEXT",
+  external_updated_at: "TEXT",
+};
+
 async function upgradeSchema() {
   const database = env.DB;
   if (!database) throw new Error("La base de datos del panel no esta conectada.");
@@ -97,10 +103,21 @@ async function upgradeSchema() {
     amenities TEXT DEFAULT '[]' NOT NULL,
     specifications TEXT DEFAULT '[]' NOT NULL,
     publication_status TEXT DEFAULT 'published' NOT NULL,
+    source TEXT DEFAULT 'manual' NOT NULL,
+    external_id TEXT,
+    external_updated_at TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
   )`).run();
+  const developmentColumnResult = await database.prepare("PRAGMA table_info(developments)").all<ColumnInfo>();
+  const developmentColumnNames = new Set((developmentColumnResult.results ?? []).map(column => column.name));
+  for (const [name, definition] of Object.entries(developmentColumns)) {
+    if (!developmentColumnNames.has(name)) await database.prepare(`ALTER TABLE developments ADD COLUMN ${name} ${definition}`).run();
+  }
+
   await database.prepare("CREATE UNIQUE INDEX IF NOT EXISTS developments_slug_unique ON developments (slug)").run();
+  await database.prepare("CREATE UNIQUE INDEX IF NOT EXISTS developments_external_id_unique ON developments (external_id) WHERE external_id IS NOT NULL").run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS developments_source_status_index ON developments (source, publication_status)").run();
   await database.prepare(`CREATE TABLE IF NOT EXISTS site_settings (
     id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
     agency_name TEXT DEFAULT 'Ideamos Propiedades' NOT NULL,
