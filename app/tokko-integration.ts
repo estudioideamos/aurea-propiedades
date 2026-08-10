@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { env, waitUntil } from "cloudflare:workers";
 import { ensureDatabaseSchema } from "../db/ensure-schema";
 
 type RuntimeEnv = typeof env & { TOKKO_CONFIG_ENCRYPTION_KEY?: string };
@@ -497,5 +497,31 @@ export async function refreshTokkoIfDue(minutes = 30) {
   const lockCutoff = new Date(Date.now() - 10 * 60000).toISOString();
   if (row.lastSyncAt && row.lastSyncAt >= cutoff) return;
   if (row.syncStartedAt && row.syncStartedAt >= lockCutoff) return;
-  try { await syncTokkoForAdmin(row.adminId); } catch { /* El catalogo manual sigue disponible si Tokko no responde. */ }
+
+  const startedAt = new Date().toISOString();
+  const claimed = await env.DB.prepare(`UPDATE tokko_integrations
+    SET last_sync_status='syncing', sync_started_at=?, last_sync_error=''
+    WHERE admin_id=?
+      AND enabled=1
+      AND (last_sync_at IS NULL OR last_sync_at < ?)
+      AND (sync_started_at IS NULL OR sync_started_at < ?)`)
+    .bind(startedAt, row.adminId, cutoff, lockCutoff).run();
+  if (Number(claimed.meta.changes ?? 0) < 1) return;
+
+  try {
+    await syncTokkoForAdmin(row.adminId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo actualizar Tokko en segundo plano.";
+    await env.DB.prepare("UPDATE tokko_integrations SET last_sync_status='error', last_sync_error=?, sync_started_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE admin_id=?")
+      .bind(message.slice(0, 500), row.adminId).run();
+  }
+}
+
+export function scheduleTokkoRefreshIfDue(minutes = 30) {
+  waitUntil(refreshTokkoIfDue(minutes).catch((error) => {
+    console.error(JSON.stringify({
+      message: "tokko_background_refresh_failed",
+      error: error instanceof Error ? error.message : String(error),
+    }));
+  }));
 }
