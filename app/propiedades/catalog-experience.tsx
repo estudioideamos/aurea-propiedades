@@ -68,7 +68,8 @@ export function CatalogExperience({ properties }: { properties: Property[] }) {
     selectMatching("tipo", typeOptions, setType);
     selectMatching("zona", zoneOptions, setZone);
     selectMatching("ambientes", roomOptions, setRooms);
-    setFiltersReady(true);
+    const readyTimer = window.setTimeout(() => setFiltersReady(true), 0);
+    return () => window.clearTimeout(readyTimer);
   }, [filtersReady, typeOptions, zoneOptions]);
 
   useEffect(() => {

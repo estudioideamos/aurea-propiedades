@@ -79,6 +79,13 @@ async function upgradeSchema() {
     created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (property_id) REFERENCES properties(id) ON UPDATE NO ACTION ON DELETE NO ACTION
   )`).run();
+  await database.prepare(`CREATE TABLE IF NOT EXISTS lead_submission_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    ip TEXT NOT NULL,
+    attempted_at TEXT NOT NULL
+  )`).run();
+  await database.prepare("CREATE INDEX IF NOT EXISTS lead_submission_attempts_lookup ON lead_submission_attempts(ip,attempted_at)").run();
+  await database.prepare("PRAGMA optimize").run();
   await database.prepare(`CREATE TABLE IF NOT EXISTS developments (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     slug TEXT NOT NULL UNIQUE,

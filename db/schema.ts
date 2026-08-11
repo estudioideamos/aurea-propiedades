@@ -9,6 +9,12 @@ export const leads = sqliteTable("leads", {
   id: integer("id").primaryKey({ autoIncrement: true }), propertyId: integer("property_id").references(() => propertyRecords.id), name: text("name").notNull(), email: text("email"), phone: text("phone"), message: text("message").notNull(), status: text("status").notNull().default("new"), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const leadSubmissionAttempts = sqliteTable("lead_submission_attempts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  ip: text("ip").notNull(),
+  attemptedAt: text("attempted_at").notNull(),
+});
+
 export const siteSettings = sqliteTable("site_settings", {
   id: integer("id").primaryKey().default(1),
   agencyName: text("agency_name").notNull().default("Ideamos Propiedades"),

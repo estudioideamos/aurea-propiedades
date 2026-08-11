@@ -1,41 +1,48 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1785550204907,
-      "tag": "0000_naive_fantastic_four",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1785644504749,
-      "tag": "0001_military_talisman",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1785774369985,
-      "tag": "0002_fair_black_panther",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1785812711752,
-      "tag": "0003_mean_ezekiel",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1786210331583,
-      "tag": "0004_fearless_rhodey",
-      "breakpoints": true
-    }
-  ]
+    "version":  "7",
+    "dialect":  "sqlite",
+    "entries":  [
+                    {
+                        "idx":  0,
+                        "version":  "6",
+                        "when":  1785550204907,
+                        "tag":  "0000_naive_fantastic_four",
+                        "breakpoints":  true
+                    },
+                    {
+                        "idx":  1,
+                        "version":  "6",
+                        "when":  1785644504749,
+                        "tag":  "0001_military_talisman",
+                        "breakpoints":  true
+                    },
+                    {
+                        "idx":  2,
+                        "version":  "6",
+                        "when":  1785774369985,
+                        "tag":  "0002_fair_black_panther",
+                        "breakpoints":  true
+                    },
+                    {
+                        "idx":  3,
+                        "version":  "6",
+                        "when":  1785812711752,
+                        "tag":  "0003_mean_ezekiel",
+                        "breakpoints":  true
+                    },
+                    {
+                        "idx":  4,
+                        "version":  "6",
+                        "when":  1786210331583,
+                        "tag":  "0004_fearless_rhodey",
+                        "breakpoints":  true
+                    },
+                    {
+                        "idx":  5,
+                        "version":  "6",
+                        "when":  1786457456339,
+                        "tag":  "0005_protected_leads",
+                        "breakpoints":  true
+                    }
+                ]
 }
