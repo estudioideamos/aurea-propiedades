@@ -7,6 +7,8 @@ let schemaPromise: Promise<void> | null = null;
 const propertyColumns: Record<string, string> = {
   price_prefix: "TEXT DEFAULT '' NOT NULL",
   price_suffix: "TEXT DEFAULT '' NOT NULL",
+  expenses: "INTEGER DEFAULT 0 NOT NULL",
+  expenses_currency: "TEXT DEFAULT 'ARS' NOT NULL",
   covered_area: "INTEGER DEFAULT 0 NOT NULL",
   garages: "INTEGER DEFAULT 0 NOT NULL",
   age: "TEXT DEFAULT '' NOT NULL",
@@ -40,6 +42,8 @@ async function upgradeSchema() {
     price INTEGER NOT NULL,
     price_prefix TEXT DEFAULT '' NOT NULL,
     price_suffix TEXT DEFAULT '' NOT NULL,
+    expenses INTEGER DEFAULT 0 NOT NULL,
+    expenses_currency TEXT DEFAULT 'ARS' NOT NULL,
     rooms INTEGER DEFAULT 1 NOT NULL,
     bedrooms INTEGER DEFAULT 1 NOT NULL,
     bathrooms INTEGER DEFAULT 1 NOT NULL,

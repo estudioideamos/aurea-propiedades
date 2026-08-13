@@ -47,6 +47,8 @@ async function ensureSeeded() {
     price: property.price,
     pricePrefix: property.pricePrefix ?? "",
     priceSuffix: property.priceSuffix ?? "",
+    expenses: property.expenses ?? 0,
+    expensesCurrency: property.expensesCurrency ?? "ARS",
     rooms: property.rooms,
     bedrooms: property.bedrooms,
     bathrooms: property.bathrooms,
@@ -86,6 +88,8 @@ function validate(payload: PropertyPayload) {
   if (!String(payload.type ?? "").trim()) return "Complet\u00e1 el tipo de propiedad.";
   if (!validCurrencies.has(String(payload.currency))) return "La moneda no es válida.";
   if (!validStatuses.has(status)) return "El estado no es válido.";
+  if (Number(payload.expenses ?? 0) < 0) return "El valor de expensas no puede ser negativo.";
+  if (!validCurrencies.has(String(payload.expensesCurrency ?? "ARS"))) return "La moneda de expensas no es v?lida.";
   if (Number(payload.price) < 0 || Number(payload.area) <= 0) return "Revisá precio y superficie.";
   return null;
 }
@@ -103,6 +107,8 @@ function valuesFrom(payload: PropertyPayload) {
     price: Number(payload.price || 0),
     pricePrefix: String(payload.pricePrefix || "").trim(),
     priceSuffix: String(payload.priceSuffix || "").trim(),
+    expenses: Math.max(0, Number(payload.expenses || 0)),
+    expensesCurrency: String(payload.expensesCurrency || "ARS"),
     rooms: Math.max(1, Number(payload.rooms || 1)),
     bedrooms: Math.max(0, Number(payload.bedrooms || 0)),
     bathrooms: Math.max(0, Number(payload.bathrooms || 0)),

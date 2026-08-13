@@ -1,7 +1,8 @@
 export type Property = {
   id: number; slug: string; title: string; location: string; zone: string;
   operation: "Venta" | "Alquiler" | "Alquiler temporario"; type: string;
-  currency: "USD" | "ARS"; price: number; pricePrefix?: string; priceSuffix?: string; rooms: number; bedrooms: number;
+  currency: "USD" | "ARS"; price: number; pricePrefix?: string; priceSuffix?: string;
+  expenses?: number; expensesCurrency?: "USD" | "ARS"; rooms: number; bedrooms: number;
   bathrooms: number; area: number; image: string; featured?: boolean;
   description: string; amenities: string[]; gallery?: string[];
   coveredArea?: number; garages?: number; age?: string; condition?: string; orientation?: string;
@@ -27,3 +28,6 @@ export const properties: Property[] = [
 ];
 
 export const formatPrice = (property: Property) => [property.pricePrefix?.trim(), `${property.currency} ${new Intl.NumberFormat("es-AR").format(property.price)}`, property.priceSuffix?.trim()].filter(Boolean).join(" ");
+export const formatExpenses = (property: Property) => property.expenses && property.expenses > 0
+  ? `${property.expensesCurrency ?? "ARS"} ${new Intl.NumberFormat("es-AR").format(property.expenses)} / mes`
+  : "";

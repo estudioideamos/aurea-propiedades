@@ -18,7 +18,7 @@ const guides: Guide[] = [
     summary: "Cre\u00e1, edit\u00e1 y public\u00e1 cada inmueble desde un flujo guiado.",
     steps: [
       "Ingres\u00e1 a Propiedades y eleg\u00ed Nueva propiedad.",
-      "Complet\u00e1 nombre, operaci\u00f3n, ubicaci\u00f3n y precio. En tipo y zona pod\u00e9s elegir una opci\u00f3n existente o escribir una nueva; las opciones importadas desde Tokko se agregan autom\u00e1ticamente.",
+      "Complet\u00e1 nombre, operaci\u00f3n, ubicaci\u00f3n y precio. Si corresponde, agreg\u00e1 moneda e importe mensual de las expensas; si queda en cero, no se mostrar\u00e1 en la web. En tipo y zona pod\u00e9s elegir una opci\u00f3n existente o escribir una nueva; las opciones importadas desde Tokko se agregan autom\u00e1ticamente.",
       "Avanz\u00e1 a Ficha t\u00e9cnica para cargar ambientes, superficies, estado y comodidades.",
       "Sub\u00ed las im\u00e1genes, defin\u00ed la portada y guard\u00e1 como borrador o public\u00e1.",
     ],

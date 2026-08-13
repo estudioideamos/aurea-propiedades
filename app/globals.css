@@ -1098,3 +1098,7 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
   .floating-search .operation-tabs button{padding-inline:3px;font-size:10px}
   .floating-search .search-title b{font-size:18px}
 }
+
+/* Optional monthly property expenses */
+.admin-expenses-composer{display:grid;grid-template-columns:minmax(190px,1.3fr) 110px minmax(150px,1fr);gap:12px;align-items:end;padding:15px;border:1px solid #dde0d8;border-radius:15px;background:#f7f8f4}.admin-expenses-composer>div{align-self:center;display:grid;gap:5px}.admin-expenses-composer>div b{font-size:9px;letter-spacing:.1em}.admin-expenses-composer>div small{font-size:8.5px;line-height:1.45;color:var(--gray)}.detail-expenses{display:block;margin-top:10px;font-style:normal;font-size:12px;font-weight:700;color:var(--gray)}.detail-data-grid>div.detail-data-expenses{background:rgba(var(--accent-rgb),.16)}
+@media(max-width:680px){.admin-expenses-composer{grid-template-columns:1fr 1fr}.admin-expenses-composer>div{grid-column:1/-1}.detail-expenses{font-size:11px}}

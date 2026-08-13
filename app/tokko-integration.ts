@@ -226,6 +226,10 @@ function mapTokkoProperty(raw: unknown) {
   const currencyText = text(priceData.currency).toUpperCase();
   const currency = currencyText === "ARS" ? "ARS" : "USD";
   const age = Math.round(number(source.age));
+  const expenseData = record(source.expenses);
+  const expenses = Math.max(0, Math.round(number(expenseData.price) || number(expenseData.value) || number(source.expenses) || number(source.expense) || number(source.common_expenses) || number(source.maintenance_fee)));
+  const expensesCurrencyText = (text(expenseData.currency) || text(source.expenses_currency) || "ARS").toUpperCase();
+  const expensesCurrency = expensesCurrencyText === "USD" ? "USD" : "ARS";
   const condition = record(source.property_condition);
   const orientation = record(source.orientation);
   const typeData = record(source.type);
@@ -243,6 +247,8 @@ function mapTokkoProperty(raw: unknown) {
     type: tokkoType(text(typeData.name) || source.operation_category),
     currency,
     price: Math.max(0, Math.round(number(priceData.price))),
+    expenses,
+    expensesCurrency,
     rooms: Math.max(1, Math.round(number(source.room_amount) || number(source.suite_amount) + 1 || 1)),
     bedrooms: Math.max(0, Math.round(number(source.suite_amount))),
     bathrooms: Math.max(0, Math.round(number(source.bathroom_amount) + number(source.toilet_amount))),
@@ -374,16 +380,16 @@ function mapTokkoDevelopment(raw: unknown) {
 
 async function upsertTokkoProperty(item: NonNullable<ReturnType<typeof mapTokkoProperty>>) {
   await env.DB.prepare(`INSERT INTO properties
-    (slug,title,location,zone,operation,type,currency,price,price_prefix,price_suffix,rooms,bedrooms,bathrooms,area,
+    (slug,title,location,zone,operation,type,currency,price,price_prefix,price_suffix,expenses,expenses_currency,rooms,bedrooms,bathrooms,area,
     covered_area,garages,age,condition,orientation,image,gallery,description,amenities,status,featured,source,external_id,external_updated_at,updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)
     ON CONFLICT(external_id) WHERE external_id IS NOT NULL DO UPDATE SET
     title=excluded.title,location=excluded.location,zone=excluded.zone,operation=excluded.operation,type=excluded.type,
-    currency=excluded.currency,price=excluded.price,rooms=excluded.rooms,bedrooms=excluded.bedrooms,bathrooms=excluded.bathrooms,
+    currency=excluded.currency,price=excluded.price,expenses=excluded.expenses,expenses_currency=excluded.expenses_currency,rooms=excluded.rooms,bedrooms=excluded.bedrooms,bathrooms=excluded.bathrooms,
     area=excluded.area,covered_area=excluded.covered_area,garages=excluded.garages,age=excluded.age,condition=excluded.condition,
     orientation=excluded.orientation,image=excluded.image,gallery=excluded.gallery,description=excluded.description,
     amenities=excluded.amenities,status='published',source='tokko',external_updated_at=excluded.external_updated_at,updated_at=CURRENT_TIMESTAMP`)
-    .bind(item.slug,item.title,item.location,item.zone,item.operation,item.type,item.currency,item.price,"","",item.rooms,item.bedrooms,item.bathrooms,item.area,item.coveredArea,item.garages,item.age,item.condition,item.orientation,item.image,JSON.stringify(item.gallery),item.description,JSON.stringify(item.amenities),"published",0,"tokko",item.externalId,item.externalUpdatedAt).run();
+    .bind(item.slug,item.title,item.location,item.zone,item.operation,item.type,item.currency,item.price,"","",item.expenses,item.expensesCurrency,item.rooms,item.bedrooms,item.bathrooms,item.area,item.coveredArea,item.garages,item.age,item.condition,item.orientation,item.image,JSON.stringify(item.gallery),item.description,JSON.stringify(item.amenities),"published",0,"tokko",item.externalId,item.externalUpdatedAt).run();
 }
 
 

@@ -43,6 +43,13 @@
                         "when":  1786457456339,
                         "tag":  "0005_protected_leads",
                         "breakpoints":  true
+                    },
+                    {
+                        "idx":  6,
+                        "version":  "6",
+                        "when":  1786579200000,
+                        "tag":  "0006_property_expenses",
+                        "breakpoints":  true
                     }
                 ]
 }
