@@ -6,6 +6,7 @@ import { formatExpenses, formatPrice, properties as staticProperties } from "../
 import { getLiveProperty } from "../../live-properties";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { siteAsset } from "../../site-path";
+import { JsonLd, propertyJsonLd } from "../../seo";
 import { PropertyActions } from "./property-actions";
 import { PropertyGallery } from "./property-gallery";
 import { PropertyInquiryForm } from "./property-inquiry-form";
@@ -57,7 +58,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const age = rawAge.replace(/a(?:nos|\u00f1os)/gi, "a\u00f1os");
   const related=properties.filter(item=>item.id!==property.id&&(item.zone===property.zone||item.type===property.type)).slice(0,3);
   const mapUrl=`https://www.google.com/maps?q=${encodeURIComponent(property.location)}&output=embed`;
-  return <main className="detail-page premium-detail"><SiteHeader/>
+  return <main className="detail-page premium-detail"><JsonLd data={propertyJsonLd(property)}/><SiteHeader/>
     <section className="detail-intro"><div className="detail-breadcrumb"><Link href="/">Inicio</Link><span>/</span><Link href="/propiedades">Propiedades</Link><span>/</span><b>{property.title}</b></div><div className="detail-intro-grid"><div><div className="detail-pills"><span>{property.operation}</span><span>Destacada</span></div><h1>{property.title}</h1><p><MapPin aria-hidden="true" strokeWidth={1.8}/>{property.location}</p></div><div className="detail-price"><small>VALOR DE PUBLICACION</small><strong>{formatPrice(property)}</strong>{formatExpenses(property)&&<em className="detail-expenses">Expensas {formatExpenses(property)}</em>}<span>Ref. AUR-{String(property.id).padStart(4,"0")}</span></div></div><PropertyActions title={property.title}/></section>
     <PropertyGallery images={gallery} title={property.title}/>
     <section className="property-overview"><article><Home aria-hidden="true" strokeWidth={1.7}/><span>TIPO</span><b>{property.type}</b></article><article><BedDouble aria-hidden="true" strokeWidth={1.7}/><span>DORMITORIOS</span><b>{property.bedrooms}</b></article><article><Bath aria-hidden="true" strokeWidth={1.7}/><span>BA&Ntilde;OS</span><b>{property.bathrooms}</b></article><article><Maximize2 aria-hidden="true" strokeWidth={1.7}/><span>SUPERFICIE</span><b>{property.area} m2</b></article><article><CarFront aria-hidden="true" strokeWidth={1.7}/><span>COCHERAS</span><b>{garage}</b></article><article><CalendarDays aria-hidden="true" strokeWidth={1.7}/><span>ANTIGUEDAD</span><b>{age}</b></article></section>

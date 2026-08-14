@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { BarChart3, FileCheck2, House, MapPin, ShieldCheck } from "lucide-react";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { InternalHero } from "../internal-hero";
 import { siteAsset } from "../site-path";
 import { ValuationFormExperience } from "./valuation-form-experience";
+export const metadata: Metadata = {
+  title: "Tasaci?n profesional | Ideamos Propiedades",
+  description: "Solicit? una valuaci?n inmobiliaria profesional con an?lisis de mercado y estrategia comercial.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/tasacion" },
+};
+
+
 
 export const dynamic = "force-static";
 

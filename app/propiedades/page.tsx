@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { CatalogExperience } from "./catalog-experience";
 import { getLiveProperties } from "../live-properties";
 import { InternalHero } from "../internal-hero";
 import { SiteFooter, SiteHeader } from "../site-chrome";
+export const metadata: Metadata = {
+  title: "Propiedades en venta y alquiler | Ideamos Propiedades",
+  description: "Explor? propiedades seleccionadas en Buenos Aires y filtr? por operaci?n, tipo, zona y cantidad de ambientes.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/propiedades" },
+  openGraph: { title: "Propiedades con criterio | Ideamos", description: "Casas, departamentos, PH y terrenos seleccionados en Buenos Aires.", url: "https://inmobiliaria.ideamos.ar/propiedades", type: "website" },
+};
+
+
 
 export const dynamic = "force-dynamic";
 

@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { InternalHero } from "../internal-hero";
 import { ContactFormExperience } from "./contact-form-experience";
 import { ContactDetails } from "./contact-details";
 import { siteAsset } from "../site-path";
+export const metadata: Metadata = {
+  title: "Contacto | Ideamos Propiedades",
+  description: "Hablemos sobre tu pr?xima propiedad, inversi?n o tasaci?n en Buenos Aires.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/contacto" },
+};
+
+
 
 export const dynamic = "force-static";
 

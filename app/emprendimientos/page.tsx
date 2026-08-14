@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Building2, CalendarDays, Layers3, MapPin } from "lucide-react";
 import { formatDevelopmentPrice } from "../developments";
 import { getLiveDevelopments } from "../live-developments";
 import { InternalHero } from "../internal-hero";
 import { SiteFooter, SiteHeader } from "../site-chrome";
+export const metadata: Metadata = {
+  title: "Emprendimientos inmobiliarios | Ideamos Propiedades",
+  description: "Descubr? proyectos en pozo, en construcci?n y pr?ximos a entregar en Buenos Aires.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/emprendimientos" },
+  openGraph: { title: "Emprendimientos con futuro | Ideamos", description: "Proyectos seleccionados por ubicaci?n, arquitectura y potencial de valor.", url: "https://inmobiliaria.ideamos.ar/emprendimientos", type: "website" },
+};
+
+
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { ServicesExperience } from "./services-experience";
 import { InternalHero } from "../internal-hero";
+export const metadata: Metadata = {
+  title: "Servicios inmobiliarios | Ideamos Propiedades",
+  description: "Compra, venta, alquileres, tasaciones, inversiones y gesti?n integral de operaciones inmobiliarias.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/servicios" },
+};
+
+
 
 export const dynamic = "force-static";
 

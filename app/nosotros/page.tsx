@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { InternalHero } from "../internal-hero";
+export const metadata: Metadata = {
+  title: "Nosotros | Ideamos Propiedades",
+  description: "Conoc? el enfoque, la experiencia y la metodolog?a de Ideamos Propiedades en Buenos Aires.",
+  alternates: { canonical: "https://inmobiliaria.ideamos.ar/nosotros" },
+};
+
+
 
 export const dynamic = "force-static";
 

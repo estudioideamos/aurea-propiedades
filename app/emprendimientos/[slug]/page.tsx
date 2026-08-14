@@ -7,6 +7,7 @@ import { getLiveDevelopment } from "../../live-developments";
 import { PropertyGallery } from "../../propiedades/[slug]/property-gallery";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { siteAsset } from "../../site-path";
+import { developmentJsonLd, JsonLd } from "../../seo";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://inmobiliaria.ideamos.ar").replace(/\/$/, "");
 const absoluteImage = (image: string) => /^https?:\/\//i.test(image) ? image : `${siteUrl}${image.startsWith("/") ? image : `/${image}`}`;
@@ -41,7 +42,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ sl
   const related = all.filter(item => item.id !== development.id).slice(0, 3);
   const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(development.location)}&output=embed`;
 
-  return <main className="detail-page premium-detail development-detail"><SiteHeader/>
+  return <main className="detail-page premium-detail development-detail"><JsonLd data={developmentJsonLd(development)}/><SiteHeader/>
     <section className="detail-intro"><div className="detail-breadcrumb"><Link href="/">Inicio</Link><span>/</span><Link href="/emprendimientos">Emprendimientos</Link><span>/</span><b>{development.title}</b></div><div className="detail-intro-grid"><div><div className="detail-pills"><span>{development.status}</span><span>Emprendimiento</span></div><h1>{development.title}</h1><p><MapPin aria-hidden="true" strokeWidth={1.8}/>{development.location}</p></div><div className="detail-price"><small>VALOR DE PUBLICACI&Oacute;N</small><strong>{formatDevelopmentPrice(development)}</strong><span>Entrega estimada / {development.delivery}</span></div></div></section>
     <PropertyGallery images={development.gallery} title={development.title}/>
     <section className="property-overview development-overview"><article><Layers3 aria-hidden="true" strokeWidth={1.7}/><span>UNIDADES</span><b>{development.units}</b></article><article><CalendarDays aria-hidden="true" strokeWidth={1.7}/><span>ENTREGA</span><b>{development.delivery}</b></article><article><Building2 aria-hidden="true" strokeWidth={1.7}/><span>ESCALA</span><b>{development.floors}</b></article><article><Ruler aria-hidden="true" strokeWidth={1.7}/><span>RESIDENCIAS</span><b>{development.apartments}</b></article><article><ParkingCircle aria-hidden="true" strokeWidth={1.7}/><span>COCHERAS</span><b>{development.garages}</b></article><article><Sparkles aria-hidden="true" strokeWidth={1.7}/><span>ESTADO</span><b>{development.status}</b></article></section>
