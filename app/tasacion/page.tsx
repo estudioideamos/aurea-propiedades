@@ -3,7 +3,7 @@ import { BarChart3, FileCheck2, House, MapPin, ShieldCheck } from "lucide-react"
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { InternalHero } from "../internal-hero";
 import { siteAsset } from "../site-path";
-import { ValuationFormExperience } from "./valuation-form-experience";
+import { ConnectedValuationForm as ValuationFormExperience } from "./connected-valuation-form";
 export const metadata: Metadata = {
   title: "Tasaci?n profesional | Ideamos Propiedades",
   description: "Solicit? una valuaci?n inmobiliaria profesional con an?lisis de mercado y estrategia comercial.",

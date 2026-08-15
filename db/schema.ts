@@ -6,7 +6,7 @@ export const propertyRecords = sqliteTable("properties", {
 });
 
 export const leads = sqliteTable("leads", {
-  id: integer("id").primaryKey({ autoIncrement: true }), propertyId: integer("property_id").references(() => propertyRecords.id), name: text("name").notNull(), email: text("email"), phone: text("phone"), message: text("message").notNull(), status: text("status").notNull().default("new"), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  id: integer("id").primaryKey({ autoIncrement: true }), propertyId: integer("property_id").references(() => propertyRecords.id), kind: text("kind").notNull().default("property"), name: text("name").notNull(), email: text("email"), phone: text("phone"), message: text("message").notNull(), context: text("context").notNull().default("{}"), status: text("status").notNull().default("new"), emailStatus: text("email_status").notNull().default("pending"), emailError: text("email_error").notNull().default(""), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const leadSubmissionAttempts = sqliteTable("lead_submission_attempts", {
@@ -19,7 +19,9 @@ export const siteSettings = sqliteTable("site_settings", {
   id: integer("id").primaryKey().default(1),
   agencyName: text("agency_name").notNull().default("Ideamos Propiedades"),
   contactName: text("contact_name").notNull().default("Equipo Ideamos"),
-  contactEmail: text("contact_email").notNull().default("hola@ideamos.ar"),
+  contactEmail: text("contact_email").notNull().default("hola@ideamos.com.ar"),
+  contactRecipients: text("contact_recipients").notNull().default('["hola@ideamos.com.ar"]'),
+  valuationRecipients: text("valuation_recipients").notNull().default('["hola@ideamos.com.ar"]'),
   phone: text("phone").notNull().default("+54 11 5555 0190"),
   address: text("address").notNull().default("Av. del Libertador 2424, Buenos Aires"),
   schedule: text("schedule").notNull().default("Lun. a vie. / 9 a 18 h"),

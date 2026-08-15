@@ -2,5 +2,5 @@
 import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 type Settings={contactEmail:string;phone:string;address:string;schedule:string};
-const fallback:Settings={contactEmail:"hola@ideamos.ar",phone:"+54 11 5555 0190",address:"Av. del Libertador 2424, Buenos Aires",schedule:"Lun. a vie. / 9 a 18 h"};
+const fallback:Settings={contactEmail:"hola@ideamos.com.ar",phone:"+54 11 5555 0190",address:"Av. del Libertador 2424, Buenos Aires",schedule:"Lun. a vie. / 9 a 18 h"};
 export function ContactDetails(){const[settings,setSettings]=useState(fallback);useEffect(()=>{void fetch("/api/settings",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(data=>{if(data?.settings)setSettings(data.settings)}).catch(()=>{});},[]);const tel=settings.phone.replace(/[^+\d]/g,"");return <div className="contact-vian-details"><article><small>01</small><MapPin aria-hidden="true"/><span>OFICINA</span><b>{settings.address}</b></article><article><small>02</small><Phone aria-hidden="true"/><span>LLAMANOS</span><a href={`tel:${tel}`}>{settings.phone}</a></article><article><small>03</small><Mail aria-hidden="true"/><span>ESCRIBINOS</span><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></article><article><small>04</small><Clock3 aria-hidden="true"/><span>HORARIOS</span><b>{settings.schedule}</b></article></div>}

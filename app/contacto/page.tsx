@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { InternalHero } from "../internal-hero";
-import { ContactFormExperience } from "./contact-form-experience";
+import { ConnectedContactForm as ContactFormExperience } from "./connected-contact-form";
 import { ContactDetails } from "./contact-details";
 import { siteAsset } from "../site-path";
 export const metadata: Metadata = {

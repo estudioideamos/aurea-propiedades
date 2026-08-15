@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { siteAsset } from "./site-path";
 
 type PublicSettings = { contactEmail:string; phone:string; address:string; schedule:string };
-const defaultPublicSettings: PublicSettings = { contactEmail:"hola@ideamos.ar", phone:"+54 11 5555 0190", address:"Av. del Libertador 2424, Buenos Aires", schedule:"Lun. a vie. / 9 a 18 h" };
+const defaultPublicSettings: PublicSettings = { contactEmail:"hola@ideamos.com.ar", phone:"+54 11 5555 0190", address:"Av. del Libertador 2424, Buenos Aires", schedule:"Lun. a vie. / 9 a 18 h" };
 
 const orbitText = "EXPLORAR \u00b7 PROPIEDADES \u00b7 IDEAMOS \u00b7 ";
 const marqueeItems = ["PROPIEDADES SELECCIONADAS", "TASACIONES PROFESIONALES", "ADMINISTRACIÓN DE ALQUILERES", "ACOMPAÑAMIENTO PERSONAL", "BUENOS AIRES"];

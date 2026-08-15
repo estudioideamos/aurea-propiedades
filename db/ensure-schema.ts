@@ -26,6 +26,18 @@ const developmentColumns: Record<string, string> = {
   external_updated_at: "TEXT",
 };
 
+const leadColumns: Record<string, string> = {
+  kind: "TEXT DEFAULT 'property' NOT NULL",
+  context: "TEXT DEFAULT '{}' NOT NULL",
+  email_status: "TEXT DEFAULT 'pending' NOT NULL",
+  email_error: "TEXT DEFAULT '' NOT NULL",
+};
+
+const siteSettingColumns: Record<string, string> = {
+  contact_recipients: `TEXT DEFAULT '["hola@ideamos.com.ar"]' NOT NULL`,
+  valuation_recipients: `TEXT DEFAULT '["hola@ideamos.com.ar"]' NOT NULL`,
+};
+
 async function upgradeSchema() {
   const database = env.DB;
   if (!database) throw new Error("La base de datos del panel no esta conectada.");
@@ -75,14 +87,23 @@ async function upgradeSchema() {
   await database.prepare(`CREATE TABLE IF NOT EXISTS leads (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     property_id INTEGER,
+    kind TEXT DEFAULT 'property' NOT NULL,
     name TEXT NOT NULL,
     email TEXT,
     phone TEXT,
     message TEXT NOT NULL,
+    context TEXT DEFAULT '{}' NOT NULL,
     status TEXT DEFAULT 'new' NOT NULL,
+    email_status TEXT DEFAULT 'pending' NOT NULL,
+    email_error TEXT DEFAULT '' NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (property_id) REFERENCES properties(id) ON UPDATE NO ACTION ON DELETE NO ACTION
   )`).run();
+  const leadColumnResult = await database.prepare("PRAGMA table_info(leads)").all<ColumnInfo>();
+  const existingLeadColumns = new Set((leadColumnResult.results ?? []).map(column => column.name));
+  for (const [name, definition] of Object.entries(leadColumns)) {
+    if (!existingLeadColumns.has(name)) await database.prepare(`ALTER TABLE leads ADD COLUMN ${name} ${definition}`).run();
+  }
   await database.prepare(`CREATE TABLE IF NOT EXISTS lead_submission_attempts (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     ip TEXT NOT NULL,
@@ -133,16 +154,30 @@ async function upgradeSchema() {
     id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
     agency_name TEXT DEFAULT 'Ideamos Propiedades' NOT NULL,
     contact_name TEXT DEFAULT 'Equipo Ideamos' NOT NULL,
-    contact_email TEXT DEFAULT 'hola@ideamos.ar' NOT NULL,
+    contact_email TEXT DEFAULT 'hola@ideamos.com.ar' NOT NULL,
+    contact_recipients TEXT DEFAULT '["hola@ideamos.com.ar"]' NOT NULL,
+    valuation_recipients TEXT DEFAULT '["hola@ideamos.com.ar"]' NOT NULL,
     phone TEXT DEFAULT '+54 11 5555 0190' NOT NULL,
     address TEXT DEFAULT 'Av. del Libertador 2424, Buenos Aires' NOT NULL,
     schedule TEXT DEFAULT 'Lun. a vie. / 9 a 18 h' NOT NULL,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
   )`).run();
 
+  const settingColumnResult = await database.prepare("PRAGMA table_info(site_settings)").all<ColumnInfo>();
+  const existingSettingColumns = new Set((settingColumnResult.results ?? []).map(column => column.name));
+  for (const [name, definition] of Object.entries(siteSettingColumns)) {
+    if (!existingSettingColumns.has(name)) await database.prepare(`ALTER TABLE site_settings ADD COLUMN ${name} ${definition}`).run();
+  }
+
   await database.prepare(`INSERT OR IGNORE INTO site_settings
-    (id, agency_name, contact_name, contact_email, phone, address, schedule)
-    VALUES (1, 'Ideamos Propiedades', 'Equipo Ideamos', 'hola@ideamos.ar', '+54 11 5555 0190', 'Av. del Libertador 2424, Buenos Aires', 'Lun. a vie. / 9 a 18 h')`).run();
+    (id, agency_name, contact_name, contact_email, contact_recipients, valuation_recipients, phone, address, schedule)
+    VALUES (1, 'Ideamos Propiedades', 'Equipo Ideamos', 'hola@ideamos.com.ar', '["hola@ideamos.com.ar"]', '["hola@ideamos.com.ar"]', '+54 11 5555 0190', 'Av. del Libertador 2424, Buenos Aires', 'Lun. a vie. / 9 a 18 h')`).run();
+
+  await database.prepare(`UPDATE site_settings SET
+    contact_email = CASE WHEN contact_email = 'hola@ideamos.ar' THEN 'hola@ideamos.com.ar' ELSE contact_email END,
+    contact_recipients = CASE WHEN contact_recipients IS NULL OR contact_recipients = '' THEN '["hola@ideamos.com.ar"]' ELSE contact_recipients END,
+    valuation_recipients = CASE WHEN valuation_recipients IS NULL OR valuation_recipients = '' THEN '["hola@ideamos.com.ar"]' ELSE valuation_recipients END
+    WHERE id = 1`).run();
 
   await database.prepare(`CREATE TABLE IF NOT EXISTS admin_users (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

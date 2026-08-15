@@ -122,3 +122,5 @@
 @media(prefers-reduced-motion:reduce){.tokko-dialog-backdrop,.tokko-dialog{animation:none}}
 
 .tokko-notice.warning{background:#fff5d9;color:#7b5714;border:1px solid #efd897}.tokko-field-help{margin:-5px 0 2px;font-size:8.5px;line-height:1.45;color:#7d857a}
+
+.lead-kind{width:max-content;padding:4px 7px;border:1px solid #dce3db;border-radius:999px;background:#f4f7f2;color:#456354!important;font-size:6px!important;font-style:normal;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.lead-kind.valuation{background:#efffc7;border-color:#d9ff63}.lead-kind.contact{background:#edf4ff;border-color:#d7e4f6}.lead-mail-status{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border-radius:999px;background:#eef0ea;color:#677068;font-size:7px;font-weight:850;text-transform:uppercase}.lead-mail-status::before{content:"";width:6px;height:6px;border-radius:50%;background:#929991}.lead-mail-status.sent{background:#e6f6e9;color:#28643a}.lead-mail-status.sent::before{background:#43a15c}.lead-mail-status.failed{background:#fff0f0;color:#9c4045}.lead-mail-status.failed::before{background:#c95c61}

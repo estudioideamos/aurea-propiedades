@@ -1059,7 +1059,7 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
 
 
 /* Catalog rooms filter layout */
-.catalog-page .catalog-controls{grid-template-columns:repeat(4,minmax(0,1fr)) 180px}
+@media(min-width:1181px){.catalog-page .catalog-controls{grid-template-columns:repeat(4,minmax(0,1fr)) 180px}}
 @media(max-width:1180px) and (min-width:601px){.catalog-page .catalog-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-controls>.catalog-result{grid-column:1/-1;min-height:92px;flex-direction:row;gap:12px}}
 @media(max-width:600px){.catalog-page .catalog-controls{grid-template-columns:1fr}.catalog-controls>.catalog-result{grid-column:1}}
 
@@ -1102,3 +1102,15 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
 /* Optional monthly property expenses */
 .admin-expenses-composer{display:grid;grid-template-columns:minmax(190px,1.3fr) 110px minmax(150px,1fr);gap:12px;align-items:end;padding:15px;border:1px solid #dde0d8;border-radius:15px;background:#f7f8f4}.admin-expenses-composer>div{align-self:center;display:grid;gap:5px}.admin-expenses-composer>div b{font-size:9px;letter-spacing:.1em}.admin-expenses-composer>div small{font-size:8.5px;line-height:1.45;color:var(--gray)}.detail-expenses{display:block;margin-top:10px;font-style:normal;font-size:12px;font-weight:700;color:var(--gray)}.detail-data-grid>div.detail-data-expenses{background:rgba(var(--accent-rgb),.16)}
 @media(max-width:680px){.admin-expenses-composer{grid-template-columns:1fr 1fr}.admin-expenses-composer>div{grid-column:1/-1}.detail-expenses{font-size:11px}}
+
+
+/* Connected inquiry forms */
+.inquiry-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.inquiry-submit-notice{grid-column:1/-1;margin:2px 0 0;padding:14px 16px;border:1px solid rgba(12,57,41,.18);border-radius:14px;display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.45}
+.inquiry-submit-notice svg{width:20px;height:20px;flex:0 0 auto}
+.inquiry-submit-notice.sent{background:#eaf6ee;color:#0c3929;border-color:#bdddc8}
+.inquiry-submit-notice.error{background:#fff0ed;color:#8b2f23;border-color:#efc2ba}
+.inquiry-submit-notice.sending{background:#f5f7f2;color:#536158}
+.contact-submit:disabled,.valuation-form-grid>button:disabled{cursor:wait;opacity:.68}
+.settings-form-grid label>small{margin:-2px 3px 0;color:#70796f;font-size:9px;line-height:1.45}
+@media(max-width:680px){.inquiry-submit-notice{justify-content:center;text-align:center;font-size:12px}.settings-form-grid label>small{text-align:left;font-size:10px}}
