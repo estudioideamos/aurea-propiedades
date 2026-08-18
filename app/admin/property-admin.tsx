@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, BookOpen, Building2, Check, CircleDollarSign, Copy, Eye, FileText, Home, Image as ImageIcon, LayoutDashboard, LoaderCircle, Mail, MapPin, Menu, MessageSquareText, Pencil, Phone, Plus, RefreshCw, Search, Settings, Sparkles, Star, Trash2, TrendingUp, Upload, Users, X, LogOut } from "lucide-react";
+import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, BookOpen, Building2, Check, CircleDollarSign, ClipboardCheck, Copy, Eye, FileText, Home, Image as ImageIcon, LayoutDashboard, LoaderCircle, Mail, MapPin, Menu, MessageSquareText, Pencil, Phone, Plus, RefreshCw, Search, Settings, Sparkles, Star, Trash2, TrendingUp, Upload, Users, X, LogOut } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { formatPrice, type Property } from "../properties";
 import { DevelopmentManager } from "./development-manager";
@@ -13,7 +13,7 @@ type AdminStatus = "published" | "draft" | "reserved";
 type AdminProperty = Property & { status: AdminStatus; updatedAt?: string };
 type AdminLead = { id: number; propertyId: number | null; kind: "property" | "contact" | "valuation"; name: string; email: string | null; phone: string | null; message: string; status: "new" | "contacted" | "closed"; emailStatus: "pending" | "sent" | "failed"; emailError: string; createdAt: string };
 type Draft = Omit<AdminProperty, "id"> & { id?: number; amenitiesText: string; gallery: string[] };
-type View = "overview" | "properties" | "developments" | "leads" | "performance" | "settings" | "manual";
+type View = "overview" | "properties" | "developments" | "leads" | "valuations" | "performance" | "settings" | "manual";
 type Props = { initialProperties: Property[]; userName: string; signOutPath: string };
 
 const emptyDraft: Draft = { slug: "", title: "", location: "", zone: "CABA", operation: "Venta", type: "Casa", currency: "USD", price: 0, pricePrefix: "", priceSuffix: "", expenses: 0, expensesCurrency: "ARS", rooms: 3, bedrooms: 2, bathrooms: 1, area: 80, coveredArea: 65, garages: 1, age: "A estrenar", condition: "Excelente", orientation: "Norte", image: "", gallery: [], description: "", amenities: [], amenitiesText: "", featured: false, status: "draft" };
@@ -25,6 +25,7 @@ const viewCopy: Record<View, { eyebrow: string; title: string }> = {
   properties: { eyebrow: "INVENTARIO", title: "Toda la cartera." },
   developments: { eyebrow: "EMPRENDIMIENTOS", title: "Proyectos seleccionados." },
   leads: { eyebrow: "CONSULTAS", title: "Personas interesadas." },
+  valuations: { eyebrow: "TASACIONES", title: "Propiedades para evaluar." },
   performance: { eyebrow: "RENDIMIENTO", title: "Datos para decidir." },
   manual: { eyebrow: "CENTRO DE AYUDA", title: "Manual de uso." },
   settings: { eyebrow: "CONFIGURACIÓN", title: "Identidad y accesos." },
@@ -89,7 +90,9 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
   const published = items.filter(item => item.status === "published").length;
   const drafts = items.filter(item => item.status === "draft").length;
   const featured = items.filter(item => item.featured).length;
-  const newLeads = leads.filter(item => item.status === "new").length;
+  const newConsultations = leads.filter(item => item.kind !== "valuation" && item.status === "new").length;
+  const newValuations = leads.filter(item => item.kind === "valuation" && item.status === "new").length;
+  const newLeads = newConsultations + newValuations;
   const portfolioValue = items.filter(item => item.currency === "USD" && item.operation === "Venta" && item.status === "published").reduce((sum, item) => sum + item.price, 0);
 
   const updateDraft = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft(current => ({ ...current, [key]: value }));
@@ -163,6 +166,7 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
 
   const navigate = (target: View) => { setView(target); setSidebarOpen(false); };
   const propertyRows = view === "overview" ? items.slice(0, 5) : visible;
+  const leadRows = leads.filter(item => view === "valuations" ? item.kind === "valuation" : item.kind !== "valuation");
 
   return <main className="admin-app">
     <aside className={`admin-sidebar ${sidebarOpen ? "open" : ""}`}>
@@ -172,7 +176,8 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
         <button className={view === "overview" ? "active" : ""} type="button" onClick={() => navigate("overview")}><LayoutDashboard/><span>Panel general</span></button>
         <button className={view === "properties" ? "active" : ""} type="button" onClick={() => navigate("properties")}><Building2/><span>Propiedades</span><b>{items.length}</b></button>
         <button className={view === "developments" ? "active" : ""} type="button" onClick={() => navigate("developments")}><Sparkles/><span>Emprendimientos</span><b>8</b></button>
-        <button className={view === "leads" ? "active" : ""} type="button" onClick={() => navigate("leads")}><MessageSquareText/><span>Consultas</span>{newLeads > 0 && <i>{newLeads}</i>}</button>
+        <button className={view === "leads" ? "active" : ""} type="button" onClick={() => navigate("leads")}><MessageSquareText/><span>Consultas</span>{newConsultations > 0 && <i>{newConsultations}</i>}</button>
+        <button className={view === "valuations" ? "active" : ""} type="button" onClick={() => navigate("valuations")}><ClipboardCheck/><span>Tasaciones</span>{newValuations > 0 && <i>{newValuations}</i>}</button>
         <button className={view === "performance" ? "active" : ""} type="button" onClick={() => navigate("performance")}><BarChart3/><span>Rendimiento</span></button>
       </nav>
       <nav className="admin-navigation secondary"><p>CONFIGURACIÓN</p><button className={view === "manual" ? "active" : ""} type="button" onClick={() => navigate("manual")}><BookOpen/><span>Manual de uso</span></button><button className={view === "settings" ? "active" : ""} type="button" onClick={() => navigate("settings")}><Settings/><span>Ajustes del sitio</span></button><a className="admin-nav-link" href={PUBLIC_SITE} target="_blank" rel="noreferrer"><Eye/><span>Ver sitio público</span><ArrowUpRight/></a></nav>
@@ -203,7 +208,7 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
         {view === "overview" && items.length > 5 && <button className="admin-see-all" type="button" onClick={()=>navigate("properties")}>Ver las {items.length} propiedades <ArrowUpRight/></button>}
       </section>}
 
-      {view === "overview" && <section className="admin-lead-summary"><div><p>CONSULTAS</p><h2>{newLeads ? `${newLeads} nuevas oportunidades.` : "Consultas al día."}</h2><span>Las consultas por propiedades, contacto y tasación llegan a una sola bandeja.</span></div><button type="button" onClick={()=>navigate("leads")}>Ver consultas <ArrowUpRight/></button></section>}
+      {view === "overview" && <section className="admin-lead-summary"><div><p>OPORTUNIDADES</p><h2>{newLeads ? `${newConsultations} consultas y ${newValuations} tasaciones nuevas.` : "Bandejas al día."}</h2><span>Las consultas comerciales y los pedidos de tasación se organizan por separado.</span></div><button type="button" onClick={()=>navigate(newValuations > newConsultations ? "valuations" : "leads")}>Abrir bandeja <ArrowUpRight/></button></section>}
 
       {view === "developments" && <DevelopmentManager/>}
 
@@ -211,7 +216,7 @@ export function PropertyAdmin({ initialProperties, userName, signOutPath }: Prop
 
       {view === "settings" && <SettingsManager signOutPath={signOutPath}/>}
       {view === "manual" && <AdminManual/>}
-      {view === "leads" && <section className="admin-content-card admin-leads-card"><div className="admin-list-head"><div><p>BANDEJA DE ENTRADA</p><h2>Consultas recibidas</h2><span>Contacto, tasaciones y propiedades, guardadas con su contexto y estado de entrega.</span></div><button type="button" onClick={()=>void loadData()}><RefreshCw/> Actualizar</button></div><div className="admin-lead-list">{leads.map(lead=>{const property=items.find(item=>item.id===lead.propertyId); return <article key={lead.id}><header><div className="lead-avatar">{lead.name.slice(0,2).toUpperCase()}</div><div><b>{lead.name}</b><span>{dateLabel(lead.createdAt)}</span><em className={"lead-kind " + lead.kind}>{leadKindLabel[lead.kind] ?? "Consulta"}</em></div><select value={lead.status} onChange={event=>void updateLead(lead.id,event.target.value as AdminLead["status"])} aria-label="Estado de consulta"><option value="new">Nueva</option><option value="contacted">Contactada</option><option value="closed">Cerrada</option></select></header><p>{lead.message}</p>{property&&<Link href={`/propiedades/${property.slug}`} target="_blank"><Building2/> {property.title}</Link>}<footer><div>{lead.email&&<a href={`mailto:${lead.email}`}><Mail/> {lead.email}</a>}{lead.phone&&<a href={`tel:${lead.phone}`}><Phone/> {lead.phone}</a>}<span className={"lead-mail-status " + lead.emailStatus} title={lead.emailError || undefined}>{lead.emailStatus === "sent" ? "Email enviado" : lead.emailStatus === "failed" ? "Email no entregado" : "Email pendiente"}</span></div><span className={`lead-state ${lead.status}`}>{leadLabel[lead.status]}</span><button type="button" onClick={()=>void removeLead(lead.id)} aria-label="Eliminar consulta"><Trash2/></button></footer></article>})}{!loading&&!leads.length&&<div className="admin-empty"><MessageSquareText/><h3>Todavía no hay consultas.</h3><p>Los mensajes enviados desde las propiedades aparecerán automáticamente.</p></div>}</div></section>}
+      {(view === "leads" || view === "valuations") && <section className="admin-content-card admin-leads-card"><div className="admin-list-head"><div><p>{view === "valuations" ? "PEDIDOS DE TASACIÓN" : "BANDEJA DE CONSULTAS"}</p><h2>{view === "valuations" ? "Tasaciones recibidas" : "Consultas recibidas"}</h2><span>{view === "valuations" ? "Solicitudes de propietarios, con datos del inmueble y estado de seguimiento." : "Mensajes generales y consultas vinculadas a propiedades, con todo su contexto."}</span></div><button type="button" onClick={()=>void loadData()}><RefreshCw/> Actualizar</button></div><div className="admin-lead-list">{leadRows.map(lead=>{const property=items.find(item=>item.id===lead.propertyId); return <article key={lead.id}><header><div className="lead-avatar">{lead.name.slice(0,2).toUpperCase()}</div><div><b>{lead.name}</b><span>{dateLabel(lead.createdAt)}</span><em className={"lead-kind " + lead.kind}>{leadKindLabel[lead.kind] ?? "Consulta"}</em></div><select value={lead.status} onChange={event=>void updateLead(lead.id,event.target.value as AdminLead["status"])} aria-label={view === "valuations" ? "Estado de tasación" : "Estado de consulta"}><option value="new">Nueva</option><option value="contacted">Contactada</option><option value="closed">Cerrada</option></select></header><p>{lead.message}</p>{property&&<Link href={`/propiedades/${property.slug}`} target="_blank"><Building2/> {property.title}</Link>}<footer><div>{lead.email&&<a href={`mailto:${lead.email}`}><Mail/> {lead.email}</a>}{lead.phone&&<a href={`tel:${lead.phone}`}><Phone/> {lead.phone}</a>}<span className={"lead-mail-status " + lead.emailStatus} title={lead.emailError || undefined}>{lead.emailStatus === "sent" ? "Email enviado" : lead.emailStatus === "failed" ? "Email no entregado" : "Email pendiente"}</span></div><span className={`lead-state ${lead.status}`}>{leadLabel[lead.status]}</span><button type="button" onClick={()=>void removeLead(lead.id)} aria-label={view === "valuations" ? "Eliminar tasación" : "Eliminar consulta"}><Trash2/></button></footer></article>})}{!loading&&!leadRows.length&&<div className="admin-empty">{view === "valuations" ? <ClipboardCheck/> : <MessageSquareText/>}<h3>{view === "valuations" ? "Todavía no hay pedidos de tasación." : "Todavía no hay consultas."}</h3><p>{view === "valuations" ? "Las solicitudes enviadas desde la página de tasación aparecerán automáticamente." : "Los mensajes generales y de propiedades aparecerán automáticamente."}</p></div>}</div></section>}
     </section>
 
     {editorOpen && <div className="admin-editor-layer" role="dialog" aria-modal="true" aria-label={draft.id?"Editar propiedad":"Nueva propiedad"}><button className="admin-editor-backdrop" type="button" onClick={()=>setEditorOpen(false)} aria-label="Cerrar editor"/><form className="admin-editor" onSubmit={submit}><header><div><p>{draft.id?`REF. ID-${String(draft.id).padStart(4,"0")}`:"NUEVA PUBLICACIÓN"}</p><h2>{draft.id?"Editar propiedad":"Crear propiedad"}</h2></div><button type="button" onClick={()=>setEditorOpen(false)} aria-label="Cerrar"><X/></button></header><div className="admin-editor-progress"><button type="button" className={editorStep===1?"active":"complete"} onClick={()=>changeEditorStep(1)}><b>1</b>{"Informaci\u00f3n"}</button><i/><button type="button" className={editorStep===2?"active":editorStep>2?"complete":""} onClick={()=>changeEditorStep(2)} disabled={!canContinueEditor}><b>2</b>{"Ficha t\u00e9cnica"}</button><i/><button type="button" className={editorStep===3?"active":""} onClick={()=>changeEditorStep(3)} disabled={!canContinueEditor}><b>3</b>{"Im\u00e1genes"}</button></div><div className="admin-editor-body">
