@@ -1124,3 +1124,11 @@ body.route-enter>main{animation:siteRouteIn .52s cubic-bezier(.22,.75,.22,1) bot
   .vian-hero-copy .eyebrow{justify-content:center}
 
 }
+
+/* Keep the optional color control out of the mobile hero copy. */
+@media (max-width: 767px) {
+  .theme-switcher{top:auto;bottom:16px;left:14px;right:auto;transform:none;width:44px;grid-template-columns:44px minmax(0,1fr);border-radius:22px;max-height:calc(100dvh - 100px)}
+  .theme-switcher.open{width:min(318px,calc(100vw - 28px));grid-template-columns:44px minmax(0,1fr)}
+  .theme-switcher-toggle{width:44px;min-height:44px}
+  .theme-switcher-toggle span{display:none}
+}
