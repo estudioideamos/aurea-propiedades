@@ -37,8 +37,9 @@ await writeFile(
   new URL("../app/live-properties.ts", import.meta.url),
   `import { properties, type Property } from "./properties";
 
-export async function getLiveProperties() { return properties; }
-export async function getLiveProperty(slug: string): Promise<{ property: Property | null; all: Property[] }> {
+export type LiveProperty = Property & { status?: string; updatedAt?: string };
+export async function getLiveProperties(): Promise<LiveProperty[]> { return properties; }
+export async function getLiveProperty(slug: string): Promise<{ property: LiveProperty | null; all: LiveProperty[] }> {
   return { property: properties.find((item) => item.slug === slug) ?? null, all: properties };
 }
 `,
@@ -65,3 +66,13 @@ await rm(new URL("../app/api/settings", import.meta.url), { recursive: true, for
 await rm(new URL("../app/api/health", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/leads", import.meta.url), { recursive: true, force: true });
 await rm(new URL("../app/api/media", import.meta.url), { recursive: true, force: true });
+
+// These routes read only the static catalog on Pages.
+for (const route of ['sitemap.xml', 'robots.txt', 'llms.txt']) {
+  await replaceIn('../app/' + route + '/route.ts', [[
+    'export const dynamic = "force-dynamic";',
+    'export const dynamic = "force-static";',
+  ]]);
+}
+// The leads API is already excluded above; omit its database-only handler too.
+await rm(new URL('../app/lead-handler.ts', import.meta.url), { force: true });
